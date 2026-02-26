@@ -32,7 +32,13 @@ let package = Package(
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "RFC 3986", package: "swift-rfc-3986")
             ]
-        )
+        ),
+        .testTarget(
+            name: "RFC 6570 Tests",
+            dependencies: [
+                "RFC 6570",
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
@@ -48,6 +54,7 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
         .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
         .enableExperimentalFeature("Lifetimes"),
         .enableExperimentalFeature("SuppressedAssociatedTypes"),
         .enableExperimentalFeature("SuppressedAssociatedTypesWithDefaults"),
