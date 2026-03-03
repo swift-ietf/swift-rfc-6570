@@ -5,7 +5,7 @@ extension RFC_6570.Template {
     /// - Parameter template: The template string to parse
     /// - Returns: Array of template components (literals and expressions)
     /// - Throws: `RFC_6570.Error` if the template is invalid
-    internal static func parse(_ template: String) throws -> [Component] {
+    internal static func parse(_ template: String) throws(RFC_6570.Error) -> [Component] {
         var components: [Component] = []
         var currentLiteral = ""
         var index = template.startIndex
@@ -56,7 +56,7 @@ extension RFC_6570.Template {
     /// - Parameter expression: The expression string (without braces)
     /// - Returns: Parsed expression
     /// - Throws: `RFC_6570.Error` if the expression is invalid
-    private static func parseExpression(_ expression: String) throws -> Expression {
+    private static func parseExpression(_ expression: String) throws(RFC_6570.Error) -> Expression {
         guard !expression.isEmpty else {
             throw RFC_6570.Error.invalidExpression("Empty expression")
         }
@@ -80,7 +80,9 @@ extension RFC_6570.Template {
             throw RFC_6570.Error.invalidExpression("No variables in expression")
         }
 
-        let varspecs = try varspecStrings.map { try parseVarSpec(String($0)) }
+        let varspecs = try varspecStrings.map { (s: Substring) throws(RFC_6570.Error) in
+            try parseVarSpec(String(s))
+        }
 
         return Expression(op: op, varspecs: varspecs)
     }
@@ -89,7 +91,7 @@ extension RFC_6570.Template {
     /// - Parameter varspec: The variable specification string
     /// - Returns: Parsed variable specification
     /// - Throws: `RFC_6570.Error` if the specification is invalid
-    private static func parseVarSpec(_ varspec: String) throws -> VarSpec {
+    private static func parseVarSpec(_ varspec: String) throws(RFC_6570.Error) -> VarSpec {
         guard !varspec.isEmpty else {
             throw RFC_6570.Error.invalidVariableName("Empty variable name")
         }

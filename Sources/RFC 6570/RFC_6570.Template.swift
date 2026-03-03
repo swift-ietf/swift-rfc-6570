@@ -38,7 +38,7 @@ extension RFC_6570 {
         /// Creates a URI template with validation
         /// - Parameter value: The template string
         /// - Throws: `RFC_6570.Error` if the template is invalid
-        public init(_ value: String) throws {
+        public init(_ value: String) throws(RFC_6570.Error) {
             self.value = value
             self.components = try Self.parse(value)
         }
@@ -139,8 +139,7 @@ extension RFC_6570.Template {
     ///
     /// - Parameter variables: Dictionary mapping variable names to their values
     /// - Returns: The expanded URI reference
-    /// - Throws: `RFC_6570.Error` if expansion fails
-    public func expand(variables: [String: RFC_6570.Variable]) throws -> RFC_3986.URI {
+    public func expand(variables: [String: RFC_6570.Variable]) -> RFC_3986.URI {
         var result = ""
 
         for component in components {
@@ -149,7 +148,7 @@ extension RFC_6570.Template {
                 result += literal
 
             case .expression(let expression):
-                let expanded = try expandExpression(expression, variables: variables)
+                let expanded = expandExpression(expression, variables: variables)
                 result += expanded
             }
         }
@@ -163,7 +162,7 @@ extension RFC_6570.Template {
     private func expandExpression(
         _ expression: Expression,
         variables: [String: RFC_6570.Variable]
-    ) throws -> String {
+    ) -> String {
         let op = expression.op
         var results: [String] = []
 
@@ -173,7 +172,7 @@ extension RFC_6570.Template {
                 continue
             }
 
-            let expanded = try expandVarSpec(varspec, value: value, operator: op)
+            let expanded = expandVarSpec(varspec, value: value, operator: op)
             // Include all expansions, even empty ones (for comma-separated contexts)
             results.append(expanded)
         }
@@ -194,20 +193,20 @@ extension RFC_6570.Template {
         _ varspec: VarSpec,
         value: RFC_6570.Variable,
         operator op: RFC_6570.Operator
-    ) throws -> String {
+    ) -> String {
         switch value {
         case .string(let str):
-            return try expandString(str, varspec: varspec, operator: op)
+            return expandString(str, varspec: varspec, operator: op)
 
         case .list(let list):
             // Empty lists are still skipped
             guard !list.isEmpty else { return "" }
-            return try expandList(list, varspec: varspec, operator: op)
+            return expandList(list, varspec: varspec, operator: op)
 
         case .dictionary(let dict):
             // Empty dictionaries are still skipped
             guard !dict.isEmpty else { return "" }
-            return try expandDictionary(dict, varspec: varspec, operator: op)
+            return expandDictionary(dict, varspec: varspec, operator: op)
         }
     }
 
@@ -216,7 +215,7 @@ extension RFC_6570.Template {
         _ string: String,
         varspec: VarSpec,
         operator op: RFC_6570.Operator
-    ) throws -> String {
+    ) -> String {
         var value = string
 
         // Apply prefix modifier if present
@@ -254,7 +253,7 @@ extension RFC_6570.Template {
         _ list: [String],
         varspec: VarSpec,
         operator op: RFC_6570.Operator
-    ) throws -> String {
+    ) -> String {
         guard !list.isEmpty else { return "" }
 
         let encoded = list.map { percentEncode($0, allowReserved: op.allowReserved) }
@@ -284,7 +283,7 @@ extension RFC_6570.Template {
         _ dict: Dictionary<String, String>.Ordered,
         varspec: VarSpec,
         operator op: RFC_6570.Operator
-    ) throws -> String {
+    ) -> String {
         guard !dict.isEmpty else { return "" }
 
         // OrderedDictionary preserves insertion order
@@ -344,8 +343,8 @@ extension RFC_6570.Template {
     /// let uri = try template.expand(["id": "123"])
     /// // Returns: RFC_3986.URI("/users/123")
     /// ```
-    public func expand(_ variables: [String: String]) throws -> RFC_3986.URI {
+    public func expand(_ variables: [String: String]) -> RFC_3986.URI {
         let wrapped = variables.mapValues { RFC_6570.Variable.string($0) }
-        return try expand(variables: wrapped)
+        return expand(variables: wrapped)
     }
 }

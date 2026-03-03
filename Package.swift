@@ -22,6 +22,7 @@ let package = Package(
         .library(name: "RFC 6570", targets: ["RFC 6570"])
     ],
     dependencies: [
+        .package(path: "../../swift-primitives/swift-dictionary-primitives"),
         .package(path: "../../swift-foundations/swift-ascii"),
         .package(path: "../swift-rfc-3986"),
     ],
@@ -29,6 +30,7 @@ let package = Package(
         .target(
             name: "RFC 6570",
             dependencies: [
+                .product(name: "Dictionary Primitives", package: "swift-dictionary-primitives"),
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "RFC 3986", package: "swift-rfc-3986")
             ]
