@@ -75,13 +75,23 @@ extension RFC_6570.Template {
         }
 
         // Parse variable specifications
-        let varspecStrings = remaining.split(separator: ",")
+        let remBytes = Array(remaining.utf8)
+        var varspecStrings: [String] = []
+        var vsStart = 0
+        for idx in 0..<remBytes.count {
+            if remBytes[idx] == 0x2C {  // ','
+                varspecStrings.append(String(decoding: remBytes[vsStart..<idx], as: UTF8.self))
+                vsStart = idx &+ 1
+            }
+        }
+        varspecStrings.append(String(decoding: remBytes[vsStart..<remBytes.count], as: UTF8.self))
+
         guard !varspecStrings.isEmpty else {
             throw RFC_6570.Error.invalidExpression("No variables in expression")
         }
 
-        let varspecs = try varspecStrings.map { (s: Substring) throws(RFC_6570.Error) in
-            try parseVarSpec(String(s))
+        let varspecs = try varspecStrings.map { (s: String) throws(RFC_6570.Error) in
+            try parseVarSpec(s)
         }
 
         return Expression(op: op, varspecs: varspecs)
