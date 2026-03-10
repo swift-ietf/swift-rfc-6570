@@ -293,7 +293,7 @@ extension RFC_6570.Template {
                 let encodedKey = percentEncode(key, allowReserved: op.allowReserved)
                 let encodedValue = percentEncode(value, allowReserved: op.allowReserved)
                 return "\(encodedKey)=\(encodedValue)"
-            }
+            }.collect()
             return pairs.joined(separator: op.separator)
         } else {
             // No explode: comma-separated key,value pairs

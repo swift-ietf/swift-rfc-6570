@@ -88,7 +88,7 @@ extension RFC_6570.Variable {
     public var dictionaryValue: [String: String]? {
         switch self {
         case .dictionary(let d):
-            return Dictionary(uniqueKeysWithValues: d.map { ($0.key, $0.value) })
+            return [String: String](uniqueKeysWithValues: d.map { ($0.key, $0.value) }.collect())
         default: return nil
         }
     }
