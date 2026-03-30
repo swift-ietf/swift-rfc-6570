@@ -23,7 +23,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../../swift-primitives/swift-dictionary-primitives"),
-        .package(path: "../../swift-foundations/swift-ascii"),
+        .package(path: "../../swift-primitives/swift-ascii-primitives"),
         .package(path: "../swift-rfc-3986"),
     ],
     targets: [
@@ -31,7 +31,7 @@ let package = Package(
             name: "RFC 6570",
             dependencies: [
                 .product(name: "Dictionary Primitives", package: "swift-dictionary-primitives"),
-                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
                 .product(name: "RFC 3986", package: "swift-rfc-3986")
             ]
         ),
