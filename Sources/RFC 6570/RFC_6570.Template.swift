@@ -286,23 +286,30 @@ extension RFC_6570.Template {
     ) -> String {
         guard !dict.isEmpty else { return "" }
 
+        let count = dict.endIndex
+
         // OrderedDictionary preserves insertion order
         if case .explode = varspec.modifier {
             // Explode modifier: key1=val1&key2=val2
-            let pairs = dict.map { key, value in
+            var pairs: [String] = []
+            pairs.reserveCapacity(count)
+            for i in 0..<count {
+                let (key, value) = dict[i]
                 let encodedKey = percentEncode(key, allowReserved: op.allowReserved)
                 let encodedValue = percentEncode(value, allowReserved: op.allowReserved)
-                return "\(encodedKey)=\(encodedValue)"
-            }.collect()
+                pairs.append("\(encodedKey)=\(encodedValue)")
+            }
             return pairs.joined(separator: op.separator)
         } else {
             // No explode: comma-separated key,value pairs
-            let pairs = dict.flatMap { key, value in
-                let encodedKey = percentEncode(key, allowReserved: op.allowReserved)
-                let encodedValue = percentEncode(value, allowReserved: op.allowReserved)
-                return [encodedKey, encodedValue]
+            var parts: [String] = []
+            parts.reserveCapacity(count * 2)
+            for i in 0..<count {
+                let (key, value) = dict[i]
+                parts.append(percentEncode(key, allowReserved: op.allowReserved))
+                parts.append(percentEncode(value, allowReserved: op.allowReserved))
             }
-            let joined = pairs.joined(separator: ",")
+            let joined = parts.joined(separator: ",")
 
             if op.named {
                 return "\(varspec.name)=\(joined)"
