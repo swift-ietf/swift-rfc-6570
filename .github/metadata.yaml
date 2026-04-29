@@ -1,0 +1,9 @@
+# .github/metadata.yaml
+# Triaged by AI-assisted bulk pass (2026-04-29).
+description: "Swift implementation of RFC 6570: URI Template."
+topics:
+  - standards
+  - rfc
+  - rfc-6570
+  - uri
+homepage: "https://swift-institute.org"
