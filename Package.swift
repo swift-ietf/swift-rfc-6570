@@ -22,10 +22,10 @@ let package = Package(
         .library(name: "RFC 6570", targets: ["RFC 6570"])
     ],
     dependencies: [
-        .package(path: "../../swift-primitives/swift-dictionary-primitives"),
-        .package(path: "../../swift-primitives/swift-dictionary-ordered-primitives"),
-        .package(path: "../../swift-primitives/swift-ascii-primitives"),
-        .package(path: "../swift-rfc-3986"),
+        .package(url: "https://github.com/swift-primitives/swift-dictionary-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-dictionary-ordered-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
     ],
     targets: [
         .target(
