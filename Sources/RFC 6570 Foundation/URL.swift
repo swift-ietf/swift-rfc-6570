@@ -49,7 +49,10 @@ extension URL {
     }
 
     /// Creates a URL by expanding an existing template with variable values
-    public init(template: RFC_6570.Template, variables: [String: RFC_6570.Variable]) throws(RFC_6570.Error) {
+    public init(
+        template: RFC_6570.Template,
+        variables: [String: RFC_6570.Variable]
+    ) throws(RFC_6570.Error) {
         let uri = template.expand(variables: variables)
         guard let url = URL(string: uri.value) else {
             throw RFC_6570.Error.expansionFailed("Result is not a valid URL: \(uri.value)")

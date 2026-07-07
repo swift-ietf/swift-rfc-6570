@@ -8,3 +8,11 @@ disabled_rules:
   - empty_string
   - implicit_optional_initialization
   - opening_brace
+  # force_try: deliberate, not accidental. RFC_6570.Variable's two dictionary
+  # constructors build `[String: String].Ordered` from (a) a native Swift
+  # Dictionary's sorted key-value pairs, whose keys are already unique by
+  # construction, and (b) the fixed variadic element list a caller writes in a
+  # dictionary-literal expression — both call sites are internal to this type's
+  # own literal/conversion initializers, consistently, not an omitted error path.
+  # iso-8601 precedent.
+  - force_try

@@ -37,7 +37,7 @@ extension RFC_6570.Variable {
     /// - Parameter dict: The dictionary to convert
     /// - Note: Keys will be sorted alphabetically for consistent output
     public init(dictionary: [String: String]) {
-        let ordered = try! Dictionary<String, String>.Ordered( dictionary.sorted { $0.key < $1.key })
+        let ordered = try! [String: String].Ordered(dictionary.sorted { $0.key < $1.key })
         self = .dictionary(ordered)
     }
 
@@ -63,7 +63,7 @@ extension RFC_6570.Variable: ExpressibleByArrayLiteral {
 
 extension RFC_6570.Variable: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, String)...) {
-        self = .dictionary(try! Dictionary<String, String>.Ordered( elements))
+        self = .dictionary(try! [String: String].Ordered(elements))
     }
 }
 
