@@ -7,6 +7,12 @@
 
 // MARK: - Core Types
 
+// Conformance visibility for the `.Ordered.Shared` alias's generic constraints
+// (__HashIndexed: __StoreProtocol & __BufferProtocol live here).
+public import Buffer_Linear_Primitive
+public import Hash_Indexed_Primitive
+public import Ownership_Shared_Primitive
+
 extension RFC_6570 {
     /// A URI Template as defined in RFC 6570
     ///
@@ -280,21 +286,23 @@ extension RFC_6570.Template {
 
     /// Expands a dictionary value
     private func expandDictionary(
-        _ dict: Dictionary<String, String>.Ordered,
+        _ dict: Dictionary<String, String>.Ordered.Shared,
         varspec: VarSpec,
         operator op: RFC_6570.Operator
     ) -> String {
         guard !dict.isEmpty else { return "" }
 
-        let count = dict.endIndex
+        // The Shared ordered dictionary preserves insertion order; collect its
+        // key–value pairs in that order. The typed-index carrier exposes no `Int`
+        // positional subscript — `forEach` is the ordered read door.
+        var entries: [(key: String, value: String)] = []
+        dict.forEach { key, value in entries.append((key: key, value: value)) }
 
-        // OrderedDictionary preserves insertion order
         if case .explode = varspec.modifier {
             // Explode modifier: key1=val1&key2=val2
             var pairs: [String] = []
-            pairs.reserveCapacity(count)
-            for i in 0..<count {
-                let (key, value) = dict[i]
+            pairs.reserveCapacity(entries.count)
+            for (key, value) in entries {
                 let encodedKey = percentEncode(key, allowReserved: op.allowReserved)
                 let encodedValue = percentEncode(value, allowReserved: op.allowReserved)
                 pairs.append("\(encodedKey)=\(encodedValue)")
@@ -303,9 +311,8 @@ extension RFC_6570.Template {
         } else {
             // No explode: comma-separated key,value pairs
             var parts: [String] = []
-            parts.reserveCapacity(count * 2)
-            for i in 0..<count {
-                let (key, value) = dict[i]
+            parts.reserveCapacity(entries.count * 2)
+            for (key, value) in entries {
                 parts.append(percentEncode(key, allowReserved: op.allowReserved))
                 parts.append(percentEncode(value, allowReserved: op.allowReserved))
             }

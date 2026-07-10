@@ -5,6 +5,12 @@
 //  Created by Coen ten Thije Boonkkamp on 19/11/2025.
 //
 
+// Conformance visibility for the `.Ordered.Shared` alias's generic constraints
+// (__HashIndexed: __StoreProtocol & __BufferProtocol live here).
+public import Buffer_Linear_Primitive
+public import Hash_Indexed_Primitive
+public import Ownership_Shared_Primitive
+
 extension RFC_6570 {
     /// A value that can be used in template expansion
     public enum Variable: Hashable, Sendable {
@@ -14,9 +20,15 @@ extension RFC_6570 {
         /// A list of string values
         case list([String])
 
-        /// An associative array (dictionary) of string key-value pairs
-        /// Note: Uses OrderedDictionary to preserve insertion order for RFC test compatibility
-        case dictionary(Dictionary<String, String>.Ordered)
+        /// An associative array (dictionary) of string key-value pairs.
+        ///
+        /// Uses the insertion-ordered dictionary on the CoW `Shared` column
+        /// (`Dictionary<String, String>.Ordered.Shared`) — Copyable, so it is a legal
+        /// `Equatable`/`Hashable`/`Sendable` enum payload — to preserve insertion order
+        /// for RFC expansion. Retyped for ratified decider #8: the default `.Ordered`
+        /// column went move-only upstream, so the CoW `Shared` spelling is the Copyable
+        /// configuration this enum requires.
+        case dictionary(Dictionary<String, String>.Ordered.Shared)
     }
 }
 
@@ -37,7 +49,10 @@ extension RFC_6570.Variable {
     /// - Parameter dict: The dictionary to convert
     /// - Note: Keys will be sorted alphabetically for consistent output
     public init(dictionary: [String: String]) {
-        let ordered = try! [String: String].Ordered(dictionary.sorted { $0.key < $1.key })
+        var ordered = Dictionary<String, String>.Ordered.Shared()
+        for (key, value) in dictionary.sorted(by: { $0.key < $1.key }) {
+            ordered.insert(key: key, value: value)
+        }
         self = .dictionary(ordered)
     }
 
@@ -63,7 +78,11 @@ extension RFC_6570.Variable: ExpressibleByArrayLiteral {
 
 extension RFC_6570.Variable: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, String)...) {
-        self = .dictionary(try! [String: String].Ordered(elements))
+        var ordered = Dictionary<String, String>.Ordered.Shared()
+        for (key, value) in elements {
+            ordered.insert(key: key, value: value)
+        }
+        self = .dictionary(ordered)
     }
 }
 
@@ -88,13 +107,55 @@ extension RFC_6570.Variable {
     public var dictionaryValue: [String: String]? {
         switch self {
         case .dictionary(let d):
-            var result = [String: String](minimumCapacity: d.endIndex)
-            for i in 0..<d.endIndex {
-                let (key, value) = d[i]
-                result[key] = value
-            }
+            var result: [String: String] = [:]
+            d.forEach { key, value in result[key] = value }
             return result
         default: return nil
+        }
+    }
+}
+
+// MARK: - Equatable / Hashable
+//
+// The `.dictionary` payload (`Dictionary<String, String>.Ordered.Shared`) is a CoW
+// box that does not itself conform to `Equatable`/`Hashable`, so the compiler cannot
+// synthesize these for `Variable`. Hand-written conformances give the correct,
+// insertion-order-sensitive semantics an ordered dictionary demands (retyped for
+// ratified decider #8).
+
+extension RFC_6570.Variable {
+    public static func == (lhs: RFC_6570.Variable, rhs: RFC_6570.Variable) -> Bool {
+        switch (lhs, rhs) {
+        case let (.string(l), .string(r)):
+            return l == r
+        case let (.list(l), .list(r)):
+            return l == r
+        case let (.dictionary(l), .dictionary(r)):
+            guard l.count == r.count else { return false }
+            var lhsPairs: [(String, String)] = []
+            l.forEach { key, value in lhsPairs.append((key, value)) }
+            var rhsPairs: [(String, String)] = []
+            r.forEach { key, value in rhsPairs.append((key, value)) }
+            return lhsPairs.elementsEqual(rhsPairs) { $0.0 == $1.0 && $0.1 == $1.1 }
+        default:
+            return false
+        }
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .string(let value):
+            hasher.combine(0)
+            hasher.combine(value)
+        case .list(let values):
+            hasher.combine(1)
+            hasher.combine(values)
+        case .dictionary(let dictionary):
+            hasher.combine(2)
+            dictionary.forEach { key, value in
+                hasher.combine(key)
+                hasher.combine(value)
+            }
         }
     }
 }
