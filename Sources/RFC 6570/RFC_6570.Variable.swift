@@ -17,22 +17,22 @@ extension RFC_6570 {
         /// An associative array (dictionary) of string key-value pairs
         /// Note: Uses OrderedDictionary to preserve insertion order for RFC test compatibility
         case dictionary(Dictionary<String, String>.Ordered)
-
-        /// Returns whether this value is defined per RFC 6570
-        ///
-        /// Note: Empty strings ARE defined. Only missing/nil values are undefined.
-        /// Empty lists and dictionaries are treated as undefined.
-        var isDefined: Bool {
-            switch self {
-            case .string: return true  // Empty strings are defined!
-            case .list(let l): return !l.isEmpty
-            case .dictionary(let d): return !d.isEmpty
-            }
-        }
     }
 }
 
 extension RFC_6570.Variable {
+    /// Returns whether this value is defined per RFC 6570
+    ///
+    /// Note: Empty strings ARE defined. Only missing/nil values are undefined.
+    /// Empty lists and dictionaries are treated as undefined.
+    var isDefined: Bool {
+        switch self {
+        case .string: return true  // Empty strings are defined!
+        case .list(let l): return !l.isEmpty
+        case .dictionary(let d): return !d.isEmpty
+        }
+    }
+
     /// Creates a dictionary value from a Swift Dictionary
     /// - Parameter dict: The dictionary to convert
     /// - Note: Keys will be sorted alphabetically for consistent output
