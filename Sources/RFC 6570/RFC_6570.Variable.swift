@@ -49,6 +49,12 @@ extension RFC_6570.Variable {
     /// - Parameter dict: The dictionary to convert
     /// - Note: Keys will be sorted alphabetically for consistent output
     public init(dictionary: [String: String]) {
+        // [RULE-EXEMPT-6] class (stdlib-shadow). `Dictionary` here resolves to the
+        // institute `__Dictionary` family, which vends the `.Ordered` nest alias
+        // ([DS-028]) — NOT `Swift.Dictionary`. The sugar `[String: String]` always
+        // binds to `Swift.Dictionary`, which has no `Ordered` member, so the rule's
+        // autocorrect does not compile. The generic spelling is load-bearing.
+        // swiftlint:disable:next syntactic_sugar
         var ordered = Dictionary<String, String>.Ordered.Shared()
         for (key, value) in dictionary.sorted(by: { $0.key < $1.key }) {
             ordered.insert(key: key, value: value)
@@ -78,6 +84,8 @@ extension RFC_6570.Variable: ExpressibleByArrayLiteral {
 
 extension RFC_6570.Variable: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, String)...) {
+        // [RULE-EXEMPT-6] class (stdlib-shadow) — see `init(dictionary:)` above.
+        // swiftlint:disable:next syntactic_sugar
         var ordered = Dictionary<String, String>.Ordered.Shared()
         for (key, value) in elements {
             ordered.insert(key: key, value: value)
@@ -126,11 +134,11 @@ extension RFC_6570.Variable {
 extension RFC_6570.Variable {
     public static func == (lhs: RFC_6570.Variable, rhs: RFC_6570.Variable) -> Bool {
         switch (lhs, rhs) {
-        case let (.string(l), .string(r)):
+        case (.string(let l), .string(let r)):
             return l == r
-        case let (.list(l), .list(r)):
+        case (.list(let l), .list(let r)):
             return l == r
-        case let (.dictionary(l), .dictionary(r)):
+        case (.dictionary(let l), .dictionary(let r)):
             guard l.count == r.count else { return false }
             var lhsPairs: [(String, String)] = []
             l.forEach { key, value in lhsPairs.append((key, value)) }
