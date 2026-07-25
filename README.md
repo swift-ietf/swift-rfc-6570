@@ -35,6 +35,17 @@ dependencies: [
 ]
 ```
 
+Add the product to a target that needs it:
+
+```swift
+.target(
+    name: "YourTarget",
+    dependencies: [
+        .product(name: "RFC 6570", package: "swift-rfc-6570")
+    ]
+)
+```
+
 ## Usage
 
 ### Basic Template Expansion
