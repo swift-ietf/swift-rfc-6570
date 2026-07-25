@@ -1,7 +1,7 @@
 # swift-rfc-6570
 
-[![CI](https://github.com/swift-ietf/swift-rfc-6570/workflows/CI/badge.svg)](https://github.com/swift-ietf/swift-rfc-6570/actions)
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
+[![CI](https://github.com/swift-ietf/swift-rfc-6570/workflows/CI/badge.svg)](https://github.com/swift-ietf/swift-rfc-6570/actions)
 ![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange.svg)
 ![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20iOS-lightgrey.svg)
 
