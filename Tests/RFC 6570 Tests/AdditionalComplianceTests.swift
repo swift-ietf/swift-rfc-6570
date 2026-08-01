@@ -6,7 +6,12 @@ import Testing
 
 @Suite
 struct `Additional RFC 6570 Compliance Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
 
+extension `Additional RFC 6570 Compliance Tests`.Unit {
     // Test that prefix modifier doesn't apply to composite values
     @Test
     func `Prefix modifier should not apply to lists`() throws {

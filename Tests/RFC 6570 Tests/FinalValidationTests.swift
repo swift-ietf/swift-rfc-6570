@@ -4,7 +4,12 @@ import Testing
 
 @Suite
 struct `Final Edge Case Validation` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
 
+extension `Final Edge Case Validation`.Unit {
     // Verify prefix modifier is applied BEFORE percent-encoding (per RFC)
     @Test
     func `Prefix applied before encoding`() throws {

@@ -4,7 +4,12 @@ import Testing
 
 @Suite
 struct `Prefix Modifier Deep Dive` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
 
+extension `Prefix Modifier Deep Dive`.Unit {
     // RFC 6570 Section 2.4.1: "If the prefix value is a number, then...
     // the expansion is limited to the first max-length characters of the variable's value"
     // IMPORTANT: This means CHARACTER COUNT, not BYTE COUNT

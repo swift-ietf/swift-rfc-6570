@@ -4,7 +4,12 @@ import Testing
 
 @Suite
 struct `RFC 6570 Edge Cases and Compliance Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
 
+extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     // MARK: - Character Encoding Tests
 
     @Test

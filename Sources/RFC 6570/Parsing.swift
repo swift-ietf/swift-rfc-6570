@@ -78,7 +78,7 @@ extension RFC_6570.Template {
         let remBytes = Array(remaining.utf8)
         var varspecStrings: [String] = []
         var vsStart = 0
-        for idx in 0..<remBytes.count {
+        remBytes.indices.forEach { idx in
             if remBytes[idx] == 0x2C {  // ','
                 varspecStrings.append(String(decoding: remBytes[vsStart..<idx], as: UTF8.self))
                 vsStart = idx &+ 1

@@ -57,38 +57,6 @@ extension RFC_6570 {
     }
 }
 
-// MARK: - Template Components
-
-extension RFC_6570.Template {
-    /// A component of a URI template (either a literal string or an expression)
-    internal enum Component: Hashable, Sendable {
-        case literal(String)
-        case expression(Expression)
-    }
-
-    /// A template expression: operator and list of variable specifications
-    internal struct Expression: Hashable, Sendable {
-        let op: RFC_6570.Operator
-        let varspecs: [VarSpec]
-
-        init(op: RFC_6570.Operator = .simple, varspecs: [VarSpec]) {
-            self.op = op
-            self.varspecs = varspecs
-        }
-    }
-
-    /// A variable specification within an expression
-    internal struct VarSpec: Hashable, Sendable {
-        let name: String
-        let modifier: RFC_6570.Modifier?
-
-        init(name: String, modifier: RFC_6570.Modifier? = nil) {
-            self.name = name
-            self.modifier = modifier
-        }
-    }
-}
-
 extension RFC_6570.Template: Codable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -116,7 +84,11 @@ extension RFC_6570.Template: RawRepresentable {
     public var rawValue: String { value }
 
     public init?(rawValue: String) {
-        try? self.init(rawValue)
+        do throws(RFC_6570.Error) {
+            try self.init(rawValue)
+        } catch {
+            return nil
+        }
     }
 }
 

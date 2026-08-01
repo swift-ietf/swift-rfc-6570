@@ -4,7 +4,12 @@ import Testing
 
 @Suite
 struct `RFC 6570 URI Template Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
 
+extension `RFC 6570 URI Template Tests`.Unit {
     // MARK: - Template Parsing Tests
 
     @Test
@@ -385,7 +390,12 @@ struct `RFC 6570 URI Template Tests` {
 
 @Suite
 struct `URI Template Operators` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
 
+extension `URI Template Operators`.Unit {
     @Test
     func `All operators have correct prefixes`() {
         #expect(RFC_6570.Operator.simple.prefix == "")
@@ -413,7 +423,12 @@ struct `URI Template Operators` {
 
 @Suite
 struct `Variable Value Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
 
+extension `Variable Value Tests`.Unit {
     @Test
     func `String value is defined`() {
         let value: RFC_6570.Variable = "hello"
