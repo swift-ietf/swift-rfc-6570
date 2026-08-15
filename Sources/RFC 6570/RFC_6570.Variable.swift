@@ -118,6 +118,7 @@ extension RFC_6570.Variable {
             var result: [String: String] = [:]
             d.forEach { key, value in result[key] = value }
             return result
+
         default: return nil
         }
     }
@@ -136,8 +137,10 @@ extension RFC_6570.Variable {
         switch (lhs, rhs) {
         case (.string(let l), .string(let r)):
             return l == r
+
         case (.list(let l), .list(let r)):
             return l == r
+
         case (.dictionary(let l), .dictionary(let r)):
             guard l.count == r.count else { return false }
             var lhsPairs: [(String, String)] = []
@@ -145,6 +148,7 @@ extension RFC_6570.Variable {
             var rhsPairs: [(String, String)] = []
             r.forEach { key, value in rhsPairs.append((key, value)) }
             return lhsPairs.elementsEqual(rhsPairs) { $0.0 == $1.0 && $0.1 == $1.1 }
+
         default:
             return false
         }
@@ -155,9 +159,11 @@ extension RFC_6570.Variable {
         case .string(let value):
             hasher.combine(0)
             hasher.combine(value)
+
         case .list(let values):
             hasher.combine(1)
             hasher.combine(values)
+
         case .dictionary(let dictionary):
             hasher.combine(2)
             dictionary.forEach { key, value in
