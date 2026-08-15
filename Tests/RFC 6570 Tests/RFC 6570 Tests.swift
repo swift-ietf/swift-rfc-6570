@@ -398,8 +398,8 @@ struct `URI Template Operators` {
 extension `URI Template Operators`.Unit {
     @Test
     func `All operators have correct prefixes`() {
-        #expect(RFC_6570.Operator.simple.prefix == "")
-        #expect(RFC_6570.Operator.reserved.prefix == "")
+        #expect(RFC_6570.Operator.simple.prefix.isEmpty)
+        #expect(RFC_6570.Operator.reserved.prefix.isEmpty)
         #expect(RFC_6570.Operator.fragment.prefix == "#")
         #expect(RFC_6570.Operator.label.prefix == ".")
         #expect(RFC_6570.Operator.path.prefix == "/")

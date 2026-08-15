@@ -110,21 +110,21 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     func `Empty list is undefined`() throws {
         let template = try RFC_6570.Template("{?list}")
         let result = try template.expand(variables: ["list": .list([])])
-        #expect(result.value == "")
+        #expect(result.value.isEmpty)
     }
 
     @Test
     func `Empty dictionary is undefined`() throws {
         let template = try RFC_6570.Template("{?dict}")
         let result = try template.expand(variables: ["dict": .dictionary([:])])
-        #expect(result.value == "")
+        #expect(result.value.isEmpty)
     }
 
     @Test
     func `Missing variable is undefined`() throws {
         let template = try RFC_6570.Template("{?var}")
         let result = try template.expand(variables: [:])
-        #expect(result.value == "")
+        #expect(result.value.isEmpty)
     }
 
     // MARK: - Template Parsing Error Tests
@@ -217,7 +217,7 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     func `All undefined variables produce empty result`() throws {
         let template = try RFC_6570.Template("{?x,y,z}")
         let result = try template.expand(variables: [:])
-        #expect(result.value == "")
+        #expect(result.value.isEmpty)
     }
 
     @Test
