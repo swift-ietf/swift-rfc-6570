@@ -9,7 +9,7 @@
 // (__HashIndexed: __StoreProtocol & __BufferProtocol live here).
 public import Buffer_Linear_Primitive
 public import Hash_Indexed_Primitive
-public import Ownership_Shared_Primitive
+import Ownership_Shared_Primitive
 
 extension RFC_6570 {
     /// A value that can be used in template expansion

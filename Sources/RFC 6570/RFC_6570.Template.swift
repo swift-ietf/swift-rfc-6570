@@ -9,9 +9,9 @@
 
 // Conformance visibility for the `.Ordered.Shared` alias's generic constraints
 // (__HashIndexed: __StoreProtocol & __BufferProtocol live here).
-public import Buffer_Linear_Primitive
-public import Hash_Indexed_Primitive
-public import Ownership_Shared_Primitive
+import Buffer_Linear_Primitive
+import Hash_Indexed_Primitive
+import Ownership_Shared_Primitive
 
 extension RFC_6570 {
     /// A URI Template as defined in RFC 6570
