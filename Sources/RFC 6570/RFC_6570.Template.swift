@@ -1,55 +1,20 @@
-//
-//  File.swift
-//  swift-rfc-6570
-//
-//  Created by Coen ten Thije Boonkkamp on 19/11/2025.
-//
-
-// MARK: - Core Types
-
-// Conformance visibility for the `.Ordered.Shared` alias's generic constraints
-// (__HashIndexed: __StoreProtocol & __BufferProtocol live here).
 import Buffer_Linear_Primitive
 import Hash_Indexed_Primitive
 import Ownership_Shared_Primitive
 
 extension RFC_6570 {
-    /// A URI Template as defined in RFC 6570
-    ///
-    /// URI Templates provide a compact syntax for describing a range of URIs through variable
-    /// expansion. This implementation supports all four levels of template expressions defined
-    /// in RFC 6570 Section 1.2.
-    ///
-    /// Template expressions can contain:
-    /// - Variable names: `{var}`
-    /// - Operators: `{+var}`, `{#var}`, `{.var}`, `{/var}`, `{;var}`, `{?var}`, `{&var}`
-    /// - Modifiers: prefix `:n` and explode `*`
-    ///
-    /// Example:
-    /// ```swift
-    /// let template = try Template("/{path}{?query*}")
-    /// let uri = try template.expand(variables: [
-    ///     "path": .string("search"),
-    ///     "query": .dictionary(["q": "swift", "lang": "en"])
-    /// ])
-    /// // Result: "/search?q=swift&lang=en"
-    /// ```
+
     public struct Template: Hashable, Sendable {
-        /// The template string
+
         public let value: String
 
-        /// Parsed template components (literals and expressions)
         internal let components: [Component]
 
-        /// Creates a URI template with validation
-        /// - Parameter value: The template string
-        /// - Throws: `RFC_6570.Error` if the template is invalid
         public init(_ value: String) throws(RFC_6570.Error) {
             self.value = value
             self.components = try Self.parse(value)
         }
 
-        /// Creates a URI template without validation (for internal use)
         internal init(unchecked value: String, components: [Component]) {
             self.value = value
             self.components = components
@@ -99,24 +64,7 @@ extension RFC_6570.Template: Comparable {
 }
 
 extension RFC_6570.Template {
-    /// Expands the template with the given variables
-    ///
-    /// Returns a URI reference as defined by RFC 3986.
-    /// Result may be an absolute URI or a relative reference depending on the template.
-    ///
-    /// Example:
-    /// ```swift
-    /// let template = try Template("/users/{id}/posts{?page,limit}")
-    /// let uri = try template.expand(variables: [
-    ///     "id": "123",
-    ///     "page": "1",
-    ///     "limit": "50"
-    /// ])
-    /// // Result: URI("/users/123/posts?page=1&limit=50")
-    /// ```
-    ///
-    /// - Parameter variables: Dictionary mapping variable names to their values
-    /// - Returns: The expanded URI reference
+
     public func expand(variables: [String: RFC_6570.Variable]) -> RFC_3986.URI {
         var result = ""
 
@@ -131,12 +79,9 @@ extension RFC_6570.Template {
             }
         }
 
-        // RFC 6570 expansion always produces valid URI references (per RFC 3986 Section 4.1)
-        // Use unchecked initializer for performance - our percent-encoding guarantees validity
         return RFC_3986.URI(unchecked: result)
     }
 
-    /// Expands a single expression
     private func expandExpression(
         _ expression: Expression,
         variables: [String: RFC_6570.Variable]
@@ -146,12 +91,12 @@ extension RFC_6570.Template {
 
         for varspec in expression.varspecs {
             guard let value = variables[varspec.name], value.isDefined else {
-                // Undefined variables are skipped per RFC 6570
+
                 continue
             }
 
             let expanded = expandVarSpec(varspec, value: value, operator: op)
-            // Include all expansions, even empty ones (for comma-separated contexts)
+
             results.append(expanded)
         }
 
@@ -159,14 +104,11 @@ extension RFC_6570.Template {
             return ""
         }
 
-        // Join results with operator separator
         let joined = results.joined(separator: op.separator)
 
-        // Add operator prefix
         return op.prefix + joined
     }
 
-    /// Expands a single variable specification
     private func expandVarSpec(
         _ varspec: VarSpec,
         value: RFC_6570.Variable,
@@ -177,18 +119,17 @@ extension RFC_6570.Template {
             return expandString(str, varspec: varspec, operator: op)
 
         case .list(let list):
-            // Empty lists are still skipped
+
             guard !list.isEmpty else { return "" }
             return expandList(list, varspec: varspec, operator: op)
 
         case .dictionary(let dict):
-            // Empty dictionaries are still skipped
+
             guard !dict.isEmpty else { return "" }
             return expandDictionary(dict, varspec: varspec, operator: op)
         }
     }
 
-    /// Expands a string value
     private func expandString(
         _ string: String,
         varspec: VarSpec,
@@ -196,37 +137,30 @@ extension RFC_6570.Template {
     ) -> String {
         var value = string
 
-        // Apply prefix modifier if present
         if case .prefix(let length) = varspec.modifier {
             value = String(value.prefix(length))
         }
 
-        // Encode the value
         let encoded = percentEncode(value, allowReserved: op.allowReserved)
 
-        // Add variable name for named operators
         if op.named {
-            // Different operators handle empty values differently:
-            // - Semicolon operator (;): empty values produce just the name: "name"
-            // - Query operators (?, &): empty values produce "name="
+
             if value.isEmpty && op == .parameter {
-                // Semicolon operator: no "=" for empty values
+
                 return varspec.name
             } else if value.isEmpty {
-                // Query operators (query, continuation): include "=" for empty values
+
                 return "\(varspec.name)="
             } else {
-                // Non-empty values: always include "="
+
                 return "\(varspec.name)=\(encoded)"
             }
         } else {
-            // For non-named operators, return encoded value even if empty
-            // This allows empty strings to contribute to comma-separated lists
+
             return encoded
         }
     }
 
-    /// Expands a list value
     private func expandList(
         _ list: [String],
         varspec: VarSpec,
@@ -237,16 +171,16 @@ extension RFC_6570.Template {
         let encoded = list.map { percentEncode($0, allowReserved: op.allowReserved) }
 
         if case .explode = varspec.modifier {
-            // Explode modifier: expand each element separately
+
             if op.named {
-                // Named format: var=a&var=b
+
                 return encoded.map { "\(varspec.name)=\($0)" }.joined(separator: op.separator)
             } else {
-                // Unnamed format: a,b or a.b depending on operator
+
                 return encoded.joined(separator: op.separator)
             }
         } else {
-            // No explode: comma-separated list
+
             let joined = encoded.joined(separator: ",")
             if op.named {
                 return "\(varspec.name)=\(joined)"
@@ -256,7 +190,6 @@ extension RFC_6570.Template {
         }
     }
 
-    /// Expands a dictionary value
     private func expandDictionary(
         _ dict: Dictionary<String, String>.Ordered.Shared,
         varspec: VarSpec,
@@ -264,14 +197,11 @@ extension RFC_6570.Template {
     ) -> String {
         guard !dict.isEmpty else { return "" }
 
-        // The Shared ordered dictionary preserves insertion order; collect its
-        // key–value pairs in that order. The typed-index carrier exposes no `Int`
-        // positional subscript — `forEach` is the ordered read door.
         var entries: [(key: String, value: String)] = []
         dict.forEach { key, value in entries.append((key: key, value: value)) }
 
         if case .explode = varspec.modifier {
-            // Explode modifier: key1=val1&key2=val2
+
             var pairs: [String] = []
             pairs.reserveCapacity(entries.count)
             for (key, value) in entries {
@@ -281,7 +211,7 @@ extension RFC_6570.Template {
             }
             return pairs.joined(separator: op.separator)
         } else {
-            // No explode: comma-separated key,value pairs
+
             var parts: [String] = []
             parts.reserveCapacity(entries.count * 2)
             for (key, value) in entries {
@@ -298,37 +228,20 @@ extension RFC_6570.Template {
         }
     }
 
-    /// Percent-encodes a string according to RFC 6570 rules
-    /// - Parameters:
-    ///   - string: The string to encode
-    ///   - allowReserved: Whether to allow reserved characters (for + and # operators)
-    /// - Returns: Percent-encoded string
     private func percentEncode(_ string: String, allowReserved: Bool) -> String {
         if allowReserved {
-            // For reserved expansion (+, #), allow unreserved + reserved characters
-            // RFC 3986 unreserved: A-Z a-z 0-9 - . _ ~
-            // RFC 3986 reserved: : / ? # [ ] @ ! $ & ' ( ) * + , ; =
+
             let allowed = RFC_3986.CharacterSet.unreserved.union(.reserved)
             return string.percentEncoded(allowing: allowed)
         } else {
-            // For normal expansion, only allow unreserved characters
+
             return string.percentEncoded(allowing: .unreserved)
         }
     }
 }
 
 extension RFC_6570.Template {
-    /// Expands the template with string values
-    ///
-    /// Convenience method that automatically wraps strings in Variable
-    /// and returns a URI reference.
-    ///
-    /// Example:
-    /// ```swift
-    /// let template = try Template("/users/{id}")
-    /// let uri = try template.expand(["id": "123"])
-    /// // Returns: RFC_3986.URI("/users/123")
-    /// ```
+
     public func expand(_ variables: [String: String]) -> RFC_3986.URI {
         let wrapped = variables.mapValues { RFC_6570.Variable.string($0) }
         return expand(variables: wrapped)

@@ -10,7 +10,6 @@ struct `RFC 6570 Edge Cases and Compliance Tests` {
 }
 
 extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
-    // MARK: - Character Encoding Tests
 
     @Test
     func `Percent character must be encoded as %25`() throws {
@@ -50,7 +49,7 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     func `Reserved characters encoded in normal expansion`() throws {
         let template = try RFC_6570.Template("{var}")
         let result = try template.expand(variables: ["var": ":/?#[]@!$&'()*+,;="])
-        // All these should be percent-encoded
+
         #expect(result.value.contains("%"))
     }
 
@@ -59,7 +58,7 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         let template = try RFC_6570.Template("{+var}")
         let reserved = ":/?#[]@!$&'()*+,;="
         let result = try template.expand(["var": reserved])
-        // These should NOT be encoded in reserved expansion (except space if present)
+
         #expect(result.value == reserved)
     }
 
@@ -75,17 +74,13 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         #expect(resultReserved.value == "Hello!")
     }
 
-    // MARK: - Prefix Modifier Tests
-
     @Test
     func `Prefix modifier counts Unicode code points, not bytes`() throws {
         let template = try RFC_6570.Template("{var:3}")
 
-        // ASCII characters
         let resultAscii = try template.expand(variables: ["var": "Hello"])
         #expect(resultAscii.value == "Hel")
 
-        // Unicode characters (each is one code point)
         let resultUnicode = try template.expand(variables: ["var": "你好世界"])
         #expect(resultUnicode.value == "%E4%BD%A0%E5%A5%BD%E4%B8%96")
     }
@@ -96,8 +91,6 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         let result = try template.expand(variables: ["var": "short"])
         #expect(result.value == "short")
     }
-
-    // MARK: - Undefined Value Tests
 
     @Test
     func `Empty string is defined per RFC 6570`() throws {
@@ -127,8 +120,6 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         #expect(result.value.isEmpty)
     }
 
-    // MARK: - Template Parsing Error Tests
-
     @Test
     func `Unclosed brace throws error`() {
         #expect(throws: RFC_6570.Error.self) {
@@ -150,8 +141,6 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         }
     }
 
-    // MARK: - Variable Name Validation Tests
-
     @Test
     func `Variable name with underscore is valid`() throws {
         let template = try RFC_6570.Template("{var_name}")
@@ -168,7 +157,7 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
 
     @Test
     func `Variable name with percent-encoding is valid`() throws {
-        // RFC 6570 Section 2.3: variable names MAY contain pct-encoded characters
+
         let template = try RFC_6570.Template("{var%20name}")
         let result = try template.expand(variables: ["var%20name": "test"])
         #expect(result.value == "test")
@@ -180,8 +169,6 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
             try RFC_6570.Template("{var-name}")
         }
     }
-
-    // MARK: - Modifier Validation Tests
 
     @Test
     func `Zero-length prefix is invalid`() {
@@ -204,8 +191,6 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         }
     }
 
-    // MARK: - Operator Combination Tests
-
     @Test
     func `Multiple undefined variables in expression`() throws {
         let template = try RFC_6570.Template("{?x,y,z}")
@@ -227,8 +212,6 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         #expect(result.value == "#")
     }
 
-    // MARK: - List and Dictionary Edge Cases
-
     @Test
     func `List with empty string elements`() throws {
         let template = try RFC_6570.Template("{list}")
@@ -242,7 +225,7 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         let result = try template.expand(variables: [
             "keys": .dictionary(["a": "1", "b": "", "c": "3"])
         ])
-        // Should handle empty values in dictionary
+
         #expect(result.value.contains("b="))
     }
 
@@ -252,8 +235,6 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         let result = try template.expand(variables: ["list": .list(["a", "b", "c"])])
         #expect(result.value == "/a/b/c")
     }
-
-    // MARK: - Special Character Combinations
 
     @Test
     func `Slash in path segment is encoded`() throws {
@@ -275,8 +256,6 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         let result = try template.expand(variables: ["var": "a&b"])
         #expect(result.value == "?var=a%26b")
     }
-
-    // MARK: - Multiple Expressions in One Template
 
     @Test
     func `Multiple expressions with different operators`() throws {

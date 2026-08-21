@@ -10,7 +10,6 @@ struct `RFC 6570 URI Template Tests` {
 }
 
 extension `RFC 6570 URI Template Tests`.Unit {
-    // MARK: - Template Parsing Tests
 
     @Test
     func `Parse simple template`() throws {
@@ -22,7 +21,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `Parse template with literals and expressions`() throws {
         let template = try RFC_6570.Template("/users/{id}/posts")
-        // Should be: "/users/", "{id}", "/posts"
+
         #expect(template.components.count == 3)
     }
 
@@ -46,8 +45,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         }
     }
 
-    // MARK: - Basic Expansion Tests
-
     @Test
     func `Expand simple variable`() throws {
         let template = try RFC_6570.Template("/{var}")
@@ -69,11 +66,9 @@ extension `RFC 6570 URI Template Tests`.Unit {
     func `Expand with undefined variable`() throws {
         let template = try RFC_6570.Template("/{var}/{other}")
         let uri = try template.expand(variables: ["var": "value"])
-        // Undefined variables are skipped
+
         #expect(uri == "/value/")
     }
-
-    // MARK: - Operator Tests
 
     @Test
     func `Simple expansion operator`() throws {
@@ -86,7 +81,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     func `Reserved expansion operator`() throws {
         let template = try RFC_6570.Template("{+var}")
         let uri = try template.expand(variables: ["var": "hello world"])
-        // Space should be encoded even in reserved expansion
+
         #expect(uri == "hello%20world")
     }
 
@@ -113,8 +108,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         ])
         #expect(uri == "?x=1&y=2")
     }
-
-    // MARK: - List Expansion Tests
 
     @Test
     func `List with simple expansion`() throws {
@@ -143,19 +136,15 @@ extension `RFC 6570 URI Template Tests`.Unit {
         #expect(uri == "?list=red&list=green&list=blue")
     }
 
-    // MARK: - Dictionary Expansion Tests
-
     @Test
     func `Dictionary with query and explode`() throws {
         let template = try RFC_6570.Template("{?dict*}")
         let uri = try template.expand(variables: [
             "dict": .dictionary(["lang": "en", "sort": "date"])
         ])
-        // Dictionary keys are sorted
+
         #expect(uri == "?lang=en&sort=date")
     }
-
-    // MARK: - Modifier Tests
 
     @Test
     func `Prefix modifier`() throws {
@@ -164,9 +153,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         #expect(uri == "val")
     }
 
-    // MARK: - RFC 6570 Appendix A - Comprehensive Test Suite
-
-    /// Standard variable definitions from RFC 6570 Section 3.2
     private static let standardVars: [String: RFC_6570.Variable] = [
         "var": "value",
         "hello": "Hello World!",
@@ -185,8 +171,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         "count": .list(["one", "two", "three"]),
         "empty_keys": [:],
     ]
-
-    // MARK: - 3.2.2 Simple String Expansion: {var}
 
     @Test(arguments: [
         ("{var}", "value"),
@@ -215,8 +199,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         #expect(result.value == expected)
     }
 
-    // MARK: - 3.2.3 Reserved Expansion: {+var}
-
     @Test(arguments: [
         ("{+var}", "value"),
         ("{+hello}", "Hello%20World!"),
@@ -242,8 +224,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         #expect(result.value == expected)
     }
 
-    // MARK: - 3.2.4 Fragment Expansion: {#var}
-
     @Test(arguments: [
         ("{#var}", "#value"),
         ("{#hello}", "#Hello%20World!"),
@@ -263,8 +243,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         let result = try tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
-
-    // MARK: - 3.2.5 Label Expansion with Dot-Prefix: {.var}
 
     @Test(arguments: [
         ("{.who}", ".fred"),
@@ -287,8 +265,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         let result = try tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
-
-    // MARK: - 3.2.6 Path Segment Expansion: {/var}
 
     @Test(arguments: [
         ("{/who}", "/fred"),
@@ -315,8 +291,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         #expect(result.value == expected)
     }
 
-    // MARK: - 3.2.7 Path-Style Parameter Expansion: {;var}
-
     @Test(arguments: [
         ("{;who}", ";who=fred"),
         ("{;half}", ";half=50%25"),
@@ -341,8 +315,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         #expect(result.value == expected)
     }
 
-    // MARK: - 3.2.8 Form-Style Query Expansion: {?var}
-
     @Test(arguments: [
         ("{?who}", "?who=fred"),
         ("{?half}", "?half=50%25"),
@@ -363,8 +335,6 @@ extension `RFC 6570 URI Template Tests`.Unit {
         let result = try tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
-
-    // MARK: - 3.2.9 Form-Style Query Continuation: {&var}
 
     @Test(arguments: [
         ("{&who}", "&who=fred"),
@@ -437,7 +407,7 @@ extension `Variable Value Tests`.Unit {
 
     @Test
     func `Empty string is defined per RFC 6570`() {
-        // Per RFC 6570, empty strings ARE defined (only undefined/nil values are undefined)
+
         let value: RFC_6570.Variable = ""
         #expect(value.isDefined)
     }

@@ -1,10 +1,5 @@
-// MARK: - Template Parsing
-
 extension RFC_6570.Template {
-    /// Parses a template string into components
-    /// - Parameter template: The template string to parse
-    /// - Returns: Array of template components (literals and expressions)
-    /// - Throws: `RFC_6570.Error` if the template is invalid
+
     internal static func parse(_ template: String) throws(RFC_6570.Error) -> [Component] {
         var components: [Component] = []
         var currentLiteral = ""
@@ -14,20 +9,18 @@ extension RFC_6570.Template {
             let char = template[index]
 
             if char == "{" {
-                // Save any accumulated literal
+
                 if !currentLiteral.isEmpty {
                     components.append(.literal(currentLiteral))
                     currentLiteral = ""
                 }
 
-                // Find matching closing brace
                 guard let closingIndex = template[index...].firstIndex(of: "}") else {
                     throw RFC_6570.Error.invalidTemplate(
                         "Unclosed expression starting at position \(template.distance(from: template.startIndex, to: index))"
                     )
                 }
 
-                // Parse expression
                 let exprStart = template.index(after: index)
                 let exprString = String(template[exprStart..<closingIndex])
                 let expression = try parseExpression(exprString)
@@ -44,7 +37,6 @@ extension RFC_6570.Template {
             }
         }
 
-        // Save any remaining literal
         if !currentLiteral.isEmpty {
             components.append(.literal(currentLiteral))
         }
@@ -52,10 +44,6 @@ extension RFC_6570.Template {
         return components
     }
 
-    /// Parses an expression string (content between { and })
-    /// - Parameter expression: The expression string (without braces)
-    /// - Returns: Parsed expression
-    /// - Throws: `RFC_6570.Error` if the expression is invalid
     private static func parseExpression(_ expression: String) throws(RFC_6570.Error) -> Expression {
         guard !expression.isEmpty else {
             throw RFC_6570.Error.invalidExpression("Empty expression")
@@ -63,7 +51,6 @@ extension RFC_6570.Template {
 
         var remaining = expression
 
-        // Check for operator prefix
         let op: RFC_6570.Operator
         if let first = remaining.first,
             let foundOperator = RFC_6570.Operator(rawValue: String(first))
@@ -74,12 +61,11 @@ extension RFC_6570.Template {
             op = .simple
         }
 
-        // Parse variable specifications
         let remBytes = Array(remaining.utf8)
         var varspecStrings: [String] = []
         var vsStart = 0
         remBytes.indices.forEach { idx in
-            if remBytes[idx] == 0x2C {  // ','
+            if remBytes[idx] == 0x2C {
                 varspecStrings.append(String(decoding: remBytes[vsStart..<idx], as: UTF8.self))
                 vsStart = idx &+ 1
             }
@@ -97,10 +83,6 @@ extension RFC_6570.Template {
         return Expression(op: op, varspecs: varspecs)
     }
 
-    /// Parses a variable specification
-    /// - Parameter varspec: The variable specification string
-    /// - Returns: Parsed variable specification
-    /// - Throws: `RFC_6570.Error` if the specification is invalid
     private static func parseVarSpec(_ varspec: String) throws(RFC_6570.Error) -> VarSpec {
         guard !varspec.isEmpty else {
             throw RFC_6570.Error.invalidVariableName("Empty variable name")
@@ -109,15 +91,14 @@ extension RFC_6570.Template {
         var name = varspec
         var modifier: RFC_6570.Modifier? = nil
 
-        // Check for explode modifier
         if name.hasSuffix("*") {
             modifier = .explode
             name.removeLast()
         }
-        // Check for prefix modifier
+
         else if let colonIndex = name.firstIndex(of: ":") {
             let prefixString = name[name.index(after: colonIndex)...]
-            // RFC 6570 Section 2.4.1: max-length is 1 to 4 digits (max value 9999)
+
             guard prefixString.count >= 1 && prefixString.count <= 4,
                 let prefixLength = Int(prefixString),
                 prefixLength > 0
@@ -128,7 +109,6 @@ extension RFC_6570.Template {
             name = String(name[..<colonIndex])
         }
 
-        // Validate variable name (RFC 6570 Section 2.3: varchar)
         guard isValidVariableName(name) else {
             throw RFC_6570.Error.invalidVariableName("Invalid variable name: \(name)")
         }
@@ -136,10 +116,6 @@ extension RFC_6570.Template {
         return VarSpec(name: name, modifier: modifier)
     }
 
-    /// Validates a variable name according to RFC 6570 Section 2.3
-    /// varchar = ( ALPHA / DIGIT / "_" / pct-encoded )
-    /// - Parameter name: The variable name to validate
-    /// - Returns: Whether the name is valid
     private static func isValidVariableName(_ name: String) -> Bool {
         guard !name.isEmpty else { return false }
 
@@ -147,7 +123,7 @@ extension RFC_6570.Template {
             if char.ascii.isAlphanumeric || char == "_" || char == "." {
                 continue
             } else if char == "%" {
-                // Could validate percent-encoding here if needed
+
                 continue
             } else {
                 return false

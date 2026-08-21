@@ -1,5 +1,5 @@
 extension RFC_6570.Template {
-    /// A template expression: operator and list of variable specifications
+
     internal struct Expression: Hashable, Sendable {
         let op: RFC_6570.Operator
         let varspecs: [VarSpec]
