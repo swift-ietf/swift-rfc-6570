@@ -23,27 +23,27 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-primitives/swift-dictionary-primitives.git",
+            url: "https://github.com/swift-molecules/swift-dictionary.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-dictionary-ordered-primitives.git",
+            url: "https://github.com/swift-molecules/swift-dictionary-ordered.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-ascii-primitives.git",
+            url: "https://github.com/swift-molecules/swift-ascii.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-hash-table-primitives.git",
+            url: "https://github.com/swift-molecules/swift-hash-table.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-buffer-linear-primitives.git",
+            url: "https://github.com/swift-molecules/swift-buffer-linear.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-ownership-shared-primitives.git",
+            url: "https://github.com/swift-molecules/swift-ownership-shared.git",
             branch: "main"
         ),
         .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
@@ -52,21 +52,21 @@ let package = Package(
         .target(
             name: "RFC 6570",
             dependencies: [
-                .product(name: "Dictionary Primitives", package: "swift-dictionary-primitives"),
+                .product(name: "Dictionary", package: "swift-dictionary"),
                 .product(
-                    name: "Dictionary Ordered Primitives",
-                    package: "swift-dictionary-ordered-primitives"
+                    name: "Dictionary Ordered",
+                    package: "swift-dictionary-ordered"
                 ),
-                .product(name: "Hash Indexed Primitive", package: "swift-hash-table-primitives"),
+                .product(name: "Hash Indexed Primitive", package: "swift-hash-table"),
                 .product(
                     name: "Buffer Linear Primitive",
-                    package: "swift-buffer-linear-primitives"
+                    package: "swift-buffer-linear"
                 ),
                 .product(
                     name: "Ownership Shared Primitive",
-                    package: "swift-ownership-shared-primitives"
+                    package: "swift-ownership-shared"
                 ),
-                .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
+                .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "RFC 3986", package: "swift-rfc-3986"),
             ]
         ),
