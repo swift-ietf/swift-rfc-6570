@@ -1,6 +1,7 @@
 import Buffer_Linear_Primitive
 import Hash_Indexed_Primitive
 import Ownership_Shared_Primitive
+public import RFC_3986
 
 extension RFC_6570 {
 
@@ -229,14 +230,14 @@ extension RFC_6570.Template {
     }
 
     private func percentEncode(_ string: String, allowReserved: Bool) -> String {
-        if allowReserved {
-
-            let allowed = RFC_3986.CharacterSet.unreserved.union(.reserved)
-            return string.percentEncoded(allowing: allowed)
-        } else {
-
-            return string.percentEncoded(allowing: .unreserved)
-        }
+        let allowed: RFC_3986.ByteSet =
+            allowReserved
+            ? RFC_3986.ByteSet.unreserved.union(.reserved)
+            : .unreserved
+        return String(
+            decoding: RFC_3986.percentEncode(string.utf8, allowing: allowed),
+            as: UTF8.self
+        )
     }
 }
 
