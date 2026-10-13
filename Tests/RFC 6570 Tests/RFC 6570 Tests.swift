@@ -48,14 +48,14 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `Expand simple variable`() throws {
         let template = try RFC_6570.Template("/{var}")
-        let uri = try template.expand(variables: ["var": "value"])
+        let uri = template.expand(variables: ["var": "value"])
         #expect(uri == "/value")
     }
 
     @Test
     func `Expand multiple variables`() throws {
         let template = try RFC_6570.Template("/users/{id}/posts/{postId}")
-        let uri = try template.expand(variables: [
+        let uri = template.expand(variables: [
             "id": "123",
             "postId": "456",
         ])
@@ -65,7 +65,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `Expand with undefined variable`() throws {
         let template = try RFC_6570.Template("/{var}/{other}")
-        let uri = try template.expand(variables: ["var": "value"])
+        let uri = template.expand(variables: ["var": "value"])
 
         #expect(uri == "/value/")
     }
@@ -73,14 +73,14 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `Simple expansion operator`() throws {
         let template = try RFC_6570.Template("{var}")
-        let uri = try template.expand(variables: ["var": "value"])
+        let uri = template.expand(variables: ["var": "value"])
         #expect(uri == "value")
     }
 
     @Test
     func `Reserved expansion operator`() throws {
         let template = try RFC_6570.Template("{+var}")
-        let uri = try template.expand(variables: ["var": "hello world"])
+        let uri = template.expand(variables: ["var": "hello world"])
 
         #expect(uri == "hello%20world")
     }
@@ -88,21 +88,21 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `Fragment expansion operator`() throws {
         let template = try RFC_6570.Template("{#var}")
-        let uri = try template.expand(variables: ["var": "section"])
+        let uri = template.expand(variables: ["var": "section"])
         #expect(uri == "#section")
     }
 
     @Test
     func `Query expansion operator`() throws {
         let template = try RFC_6570.Template("{?var}")
-        let uri = try template.expand(variables: ["var": "value"])
+        let uri = template.expand(variables: ["var": "value"])
         #expect(uri == "?var=value")
     }
 
     @Test
     func `Query with multiple variables`() throws {
         let template = try RFC_6570.Template("{?x,y}")
-        let uri = try template.expand(variables: [
+        let uri = template.expand(variables: [
             "x": "1",
             "y": "2",
         ])
@@ -112,7 +112,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `List with simple expansion`() throws {
         let template = try RFC_6570.Template("{list}")
-        let uri = try template.expand(variables: [
+        let uri = template.expand(variables: [
             "list": .list(["red", "green", "blue"])
         ])
         #expect(uri == "red,green,blue")
@@ -121,7 +121,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `List with explode modifier`() throws {
         let template = try RFC_6570.Template("{list*}")
-        let uri = try template.expand(variables: [
+        let uri = template.expand(variables: [
             "list": .list(["red", "green", "blue"])
         ])
         #expect(uri == "red,green,blue")
@@ -130,7 +130,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `List with query and explode`() throws {
         let template = try RFC_6570.Template("{?list*}")
-        let uri = try template.expand(variables: [
+        let uri = template.expand(variables: [
             "list": .list(["red", "green", "blue"])
         ])
         #expect(uri == "?list=red&list=green&list=blue")
@@ -139,7 +139,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `Dictionary with query and explode`() throws {
         let template = try RFC_6570.Template("{?dict*}")
-        let uri = try template.expand(variables: [
+        let uri = template.expand(variables: [
             "dict": .dictionary(["lang": "en", "sort": "date"])
         ])
 
@@ -149,7 +149,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     @Test
     func `Prefix modifier`() throws {
         let template = try RFC_6570.Template("{var:3}")
-        let uri = try template.expand(variables: ["var": "value"])
+        let uri = template.expand(variables: ["var": "value"])
         #expect(uri == "val")
     }
 
@@ -195,7 +195,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
         expected: String
     ) throws {
         let tpl = try RFC_6570.Template(template)
-        let result = try tpl.expand(variables: Self.standardVars)
+        let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
 
@@ -220,7 +220,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     ])
     func `RFC 6570 Section 3.2.3 - Reserved Expansion`(template: String, expected: String) throws {
         let tpl = try RFC_6570.Template(template)
-        let result = try tpl.expand(variables: Self.standardVars)
+        let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
 
@@ -240,7 +240,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     ])
     func `RFC 6570 Section 3.2.4 - Fragment Expansion`(template: String, expected: String) throws {
         let tpl = try RFC_6570.Template(template)
-        let result = try tpl.expand(variables: Self.standardVars)
+        let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
 
@@ -262,7 +262,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
     ])
     func `RFC 6570 Section 3.2.5 - Label Expansion`(template: String, expected: String) throws {
         let tpl = try RFC_6570.Template(template)
-        let result = try tpl.expand(variables: Self.standardVars)
+        let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
 
@@ -287,7 +287,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
         expected: String
     ) throws {
         let tpl = try RFC_6570.Template(template)
-        let result = try tpl.expand(variables: Self.standardVars)
+        let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
 
@@ -311,7 +311,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
         expected: String
     ) throws {
         let tpl = try RFC_6570.Template(template)
-        let result = try tpl.expand(variables: Self.standardVars)
+        let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
 
@@ -332,7 +332,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
         expected: String
     ) throws {
         let tpl = try RFC_6570.Template(template)
-        let result = try tpl.expand(variables: Self.standardVars)
+        let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
 
@@ -353,7 +353,7 @@ extension `RFC 6570 URI Template Tests`.Unit {
         expected: String
     ) throws {
         let tpl = try RFC_6570.Template(template)
-        let result = try tpl.expand(variables: Self.standardVars)
+        let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
 }

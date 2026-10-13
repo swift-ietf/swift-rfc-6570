@@ -15,7 +15,7 @@ extension `Additional RFC 6570 Compliance Tests`.Unit {
     func `Prefix modifier should not apply to lists`() throws {
 
         let template = try RFC_6570.Template("{list:3}")
-        let result = try template.expand(variables: [
+        let result = template.expand(variables: [
             "list": .list(["red", "green", "blue"])
         ])
 
@@ -25,7 +25,7 @@ extension `Additional RFC 6570 Compliance Tests`.Unit {
     @Test
     func `Prefix modifier can have up to 4 digits`() throws {
         let template = try RFC_6570.Template("{var:9999}")
-        let result = try template.expand(variables: ["var": "test"])
+        let result = template.expand(variables: ["var": "test"])
         #expect(result.value == "test")
     }
 
@@ -41,21 +41,21 @@ extension `Additional RFC 6570 Compliance Tests`.Unit {
     func `All reserved characters in fragment expansion`() throws {
         let template = try RFC_6570.Template("{#var}")
         let reserved = ":/?#[]@!$&'()*+,;="
-        let result = try template.expand(variables: ["var": .string(reserved)])
+        let result = template.expand(variables: ["var": .string(reserved)])
         #expect(result.value == "#:/?#[]@!$&'()*+,;=")
     }
 
     @Test
     func `Multiple uses of same variable`() throws {
         let template = try RFC_6570.Template("{var}{var}{var}")
-        let result = try template.expand(variables: ["var": "test"])
+        let result = template.expand(variables: ["var": "test"])
         #expect(result.value == "testtesttest")
     }
 
     @Test
     func `Multiple variables in one expression`() throws {
         let template = try RFC_6570.Template("{?a,b,c}")
-        let result = try template.expand(variables: [
+        let result = template.expand(variables: [
             "a": "1",
             "b": "2",
             "c": "3",
@@ -66,7 +66,7 @@ extension `Additional RFC 6570 Compliance Tests`.Unit {
     @Test
     func `Literal text between expressions`() throws {
         let template = try RFC_6570.Template("http://example.com{/path}{?query}")
-        let result = try template.expand(variables: [
+        let result = template.expand(variables: [
             "path": "users",
             "query": "active",
         ])
@@ -76,7 +76,7 @@ extension `Additional RFC 6570 Compliance Tests`.Unit {
     @Test
     func `Semicolon operator with list explode`() throws {
         let template = try RFC_6570.Template("{;list*}")
-        let result = try template.expand(variables: [
+        let result = template.expand(variables: [
             "list": .list(["a", "b", "c"])
         ])
         #expect(result.value == ";list=a;list=b;list=c")
@@ -85,14 +85,14 @@ extension `Additional RFC 6570 Compliance Tests`.Unit {
     @Test
     func `Percent-encoded variable names`() throws {
         let template = try RFC_6570.Template("{var%20name}")
-        let result = try template.expand(variables: ["var%20name": "value"])
+        let result = template.expand(variables: ["var%20name": "value"])
         #expect(result.value == "value")
     }
 
     @Test
     func `Variable names are case-sensitive`() throws {
         let template = try RFC_6570.Template("{Var}{var}{VAR}")
-        let result = try template.expand(variables: [
+        let result = template.expand(variables: [
             "Var": "A",
             "var": "B",
             "VAR": "C",

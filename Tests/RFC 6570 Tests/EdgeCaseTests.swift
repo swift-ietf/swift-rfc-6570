@@ -14,14 +14,14 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     @Test
     func `Percent character must be encoded as %25`() throws {
         let template = try RFC_6570.Template("{var}")
-        let result = try template.expand(variables: ["var": "50%"])
+        let result = template.expand(variables: ["var": "50%"])
         #expect(result.value == "50%25")
     }
 
     @Test
     func `Percent character in reserved expansion`() throws {
         let template = try RFC_6570.Template("{+var}")
-        let result = try template.expand(variables: ["var": "50%"])
+        let result = template.expand(variables: ["var": "50%"])
         #expect(result.value == "50%25")
     }
 
@@ -30,8 +30,8 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         let templateNormal = try RFC_6570.Template("{var}")
         let templateReserved = try RFC_6570.Template("{+var}")
 
-        let resultNormal = try templateNormal.expand(variables: ["var": "hello world"])
-        let resultReserved = try templateReserved.expand(variables: ["var": "hello world"])
+        let resultNormal = templateNormal.expand(variables: ["var": "hello world"])
+        let resultReserved = templateReserved.expand(variables: ["var": "hello world"])
 
         #expect(resultNormal.value == "hello%20world")
         #expect(resultReserved.value == "hello%20world")
@@ -41,14 +41,14 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     func `Unreserved characters pass through unencoded`() throws {
         let template = try RFC_6570.Template("{var}")
         let unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
-        let result = try template.expand(["var": unreserved])
+        let result = template.expand(["var": unreserved])
         #expect(result.value == unreserved)
     }
 
     @Test
     func `Reserved characters encoded in normal expansion`() throws {
         let template = try RFC_6570.Template("{var}")
-        let result = try template.expand(variables: ["var": ":/?#[]@!$&'()*+,;="])
+        let result = template.expand(variables: ["var": ":/?#[]@!$&'()*+,;="])
 
         #expect(result.value.contains("%"))
     }
@@ -57,7 +57,7 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     func `Reserved characters allowed in reserved expansion`() throws {
         let template = try RFC_6570.Template("{+var}")
         let reserved = ":/?#[]@!$&'()*+,;="
-        let result = try template.expand(["var": reserved])
+        let result = template.expand(["var": reserved])
 
         #expect(result.value == reserved)
     }
@@ -67,8 +67,8 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
         let templateNormal = try RFC_6570.Template("{var}")
         let templateReserved = try RFC_6570.Template("{+var}")
 
-        let resultNormal = try templateNormal.expand(variables: ["var": "Hello!"])
-        let resultReserved = try templateReserved.expand(variables: ["var": "Hello!"])
+        let resultNormal = templateNormal.expand(variables: ["var": "Hello!"])
+        let resultReserved = templateReserved.expand(variables: ["var": "Hello!"])
 
         #expect(resultNormal.value == "Hello%21")
         #expect(resultReserved.value == "Hello!")
@@ -78,45 +78,45 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     func `Prefix modifier counts Unicode code points, not bytes`() throws {
         let template = try RFC_6570.Template("{var:3}")
 
-        let resultAscii = try template.expand(variables: ["var": "Hello"])
+        let resultAscii = template.expand(variables: ["var": "Hello"])
         #expect(resultAscii.value == "Hel")
 
-        let resultUnicode = try template.expand(variables: ["var": "你好世界"])
+        let resultUnicode = template.expand(variables: ["var": "你好世界"])
         #expect(resultUnicode.value == "%E4%BD%A0%E5%A5%BD%E4%B8%96")
     }
 
     @Test
     func `Prefix modifier larger than string length`() throws {
         let template = try RFC_6570.Template("{var:100}")
-        let result = try template.expand(variables: ["var": "short"])
+        let result = template.expand(variables: ["var": "short"])
         #expect(result.value == "short")
     }
 
     @Test
     func `Empty string is defined per RFC 6570`() throws {
         let template = try RFC_6570.Template("{?var}")
-        let result = try template.expand(variables: ["var": ""])
+        let result = template.expand(variables: ["var": ""])
         #expect(result.value == "?var=")
     }
 
     @Test
     func `Empty list is undefined`() throws {
         let template = try RFC_6570.Template("{?list}")
-        let result = try template.expand(variables: ["list": .list([])])
+        let result = template.expand(variables: ["list": .list([])])
         #expect(result.value.isEmpty)
     }
 
     @Test
     func `Empty dictionary is undefined`() throws {
         let template = try RFC_6570.Template("{?dict}")
-        let result = try template.expand(variables: ["dict": .dictionary([:])])
+        let result = template.expand(variables: ["dict": .dictionary([:])])
         #expect(result.value.isEmpty)
     }
 
     @Test
     func `Missing variable is undefined`() throws {
         let template = try RFC_6570.Template("{?var}")
-        let result = try template.expand(variables: [:])
+        let result = template.expand(variables: [:])
         #expect(result.value.isEmpty)
     }
 
@@ -144,14 +144,14 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     @Test
     func `Variable name with underscore is valid`() throws {
         let template = try RFC_6570.Template("{var_name}")
-        let result = try template.expand(variables: ["var_name": "test"])
+        let result = template.expand(variables: ["var_name": "test"])
         #expect(result.value == "test")
     }
 
     @Test
     func `Variable name with dot is valid`() throws {
         let template = try RFC_6570.Template("{var.name}")
-        let result = try template.expand(variables: ["var.name": "test"])
+        let result = template.expand(variables: ["var.name": "test"])
         #expect(result.value == "test")
     }
 
@@ -159,7 +159,7 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     func `Variable name with percent-encoding is valid`() throws {
 
         let template = try RFC_6570.Template("{var%20name}")
-        let result = try template.expand(variables: ["var%20name": "test"])
+        let result = template.expand(variables: ["var%20name": "test"])
         #expect(result.value == "test")
     }
 
@@ -194,35 +194,35 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     @Test
     func `Multiple undefined variables in expression`() throws {
         let template = try RFC_6570.Template("{?x,y,z}")
-        let result = try template.expand(variables: ["y": "2"])
+        let result = template.expand(variables: ["y": "2"])
         #expect(result.value == "?y=2")
     }
 
     @Test
     func `All undefined variables produce empty result`() throws {
         let template = try RFC_6570.Template("{?x,y,z}")
-        let result = try template.expand(variables: [:])
+        let result = template.expand(variables: [:])
         #expect(result.value.isEmpty)
     }
 
     @Test
     func `Fragment operator with empty value`() throws {
         let template = try RFC_6570.Template("{#var}")
-        let result = try template.expand(variables: ["var": ""])
+        let result = template.expand(variables: ["var": ""])
         #expect(result.value == "#")
     }
 
     @Test
     func `List with empty string elements`() throws {
         let template = try RFC_6570.Template("{list}")
-        let result = try template.expand(variables: ["list": .list(["a", "", "c"])])
+        let result = template.expand(variables: ["list": .list(["a", "", "c"])])
         #expect(result.value == "a,,c")
     }
 
     @Test
     func `Dictionary with empty values`() throws {
         let template = try RFC_6570.Template("{?keys*}")
-        let result = try template.expand(variables: [
+        let result = template.expand(variables: [
             "keys": .dictionary(["a": "1", "b": "", "c": "3"])
         ])
 
@@ -232,35 +232,35 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     @Test
     func `List explode with path operator`() throws {
         let template = try RFC_6570.Template("{/list*}")
-        let result = try template.expand(variables: ["list": .list(["a", "b", "c"])])
+        let result = template.expand(variables: ["list": .list(["a", "b", "c"])])
         #expect(result.value == "/a/b/c")
     }
 
     @Test
     func `Slash in path segment is encoded`() throws {
         let template = try RFC_6570.Template("{/var}")
-        let result = try template.expand(variables: ["var": "a/b"])
+        let result = template.expand(variables: ["var": "a/b"])
         #expect(result.value == "/a%2Fb")
     }
 
     @Test
     func `Equals in query value is encoded`() throws {
         let template = try RFC_6570.Template("{?var}")
-        let result = try template.expand(variables: ["var": "a=b"])
+        let result = template.expand(variables: ["var": "a=b"])
         #expect(result.value == "?var=a%3Db")
     }
 
     @Test
     func `Ampersand in query value is encoded`() throws {
         let template = try RFC_6570.Template("{?var}")
-        let result = try template.expand(variables: ["var": "a&b"])
+        let result = template.expand(variables: ["var": "a&b"])
         #expect(result.value == "?var=a%26b")
     }
 
     @Test
     func `Multiple expressions with different operators`() throws {
         let template = try RFC_6570.Template("{/path}{?query}{#fragment}")
-        let result = try template.expand(variables: [
+        let result = template.expand(variables: [
             "path": "search",
             "query": "test",
             "fragment": "section",
@@ -271,7 +271,7 @@ extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
     @Test
     func `Adjacent expressions`() throws {
         let template = try RFC_6570.Template("{var1}{var2}")
-        let result = try template.expand(variables: [
+        let result = template.expand(variables: [
             "var1": "hello",
             "var2": "world",
         ])

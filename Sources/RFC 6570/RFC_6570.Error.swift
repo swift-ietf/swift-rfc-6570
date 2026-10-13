@@ -1,6 +1,6 @@
 extension RFC_6570 {
 
-    public enum Error: Swift.Error, Hashable, Sendable, CustomStringConvertible {
+    public enum Error: Swift::Error, Hashable, Sendable, CustomStringConvertible {
 
         case invalidTemplate(String)
 

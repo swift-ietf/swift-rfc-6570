@@ -15,10 +15,10 @@ extension `Prefix Modifier Deep Dive`.Unit {
     func `Prefix counts characters correctly`() throws {
         let template = try RFC_6570.Template("{var:3}")
 
-        var result = try template.expand(variables: ["var": "value"])
+        var result = template.expand(variables: ["var": "value"])
         #expect(result.value == "val")
 
-        result = try template.expand(variables: ["var": "👨‍👩‍👧‍👦ABC"])
+        result = template.expand(variables: ["var": "👨‍👩‍👧‍👦ABC"])
 
         print("Emoji test result: \(result)")
     }
@@ -26,7 +26,7 @@ extension `Prefix Modifier Deep Dive`.Unit {
     @Test
     func `Prefix modifier supports up to 9999`() throws {
         let template = try RFC_6570.Template("{var:9999}")
-        let result = try template.expand(variables: ["var": "test"])
+        let result = template.expand(variables: ["var": "test"])
         #expect(result.value == "test")
     }
 
