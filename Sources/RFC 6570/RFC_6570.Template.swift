@@ -144,21 +144,20 @@ extension RFC_6570.Template {
 
         let encoded = percentEncode(value, allowReserved: op.allowReserved)
 
-        if op.named {
-
-            if value.isEmpty && op == .parameter {
-
-                return varspec.name
-            } else if value.isEmpty {
-
-                return "\(varspec.name)="
-            } else {
-
-                return "\(varspec.name)=\(encoded)"
-            }
-        } else {
+        guard op.named else {
 
             return encoded
+        }
+
+        if value.isEmpty && op == .parameter {
+
+            return varspec.name
+        } else if value.isEmpty {
+
+            return "\(varspec.name)="
+        } else {
+
+            return "\(varspec.name)=\(encoded)"
         }
     }
 
@@ -171,24 +170,21 @@ extension RFC_6570.Template {
 
         let encoded = list.map { percentEncode($0, allowReserved: op.allowReserved) }
 
-        if case .explode = varspec.modifier {
-
-            if op.named {
-
-                return encoded.map { "\(varspec.name)=\($0)" }.joined(separator: op.separator)
-            } else {
-
-                return encoded.joined(separator: op.separator)
-            }
-        } else {
+        guard case .explode = varspec.modifier else {
 
             let joined = encoded.joined(separator: ",")
-            if op.named {
-                return "\(varspec.name)=\(joined)"
-            } else {
+            guard op.named else {
                 return joined
             }
+            return "\(varspec.name)=\(joined)"
         }
+
+        guard op.named else {
+
+            return encoded.joined(separator: op.separator)
+        }
+
+        return encoded.map { "\(varspec.name)=\($0)" }.joined(separator: op.separator)
     }
 
     private func expandDictionary(
@@ -201,17 +197,7 @@ extension RFC_6570.Template {
         var entries: [(key: String, value: String)] = []
         dict.forEach { key, value in entries.append((key: key, value: value)) }
 
-        if case .explode = varspec.modifier {
-
-            var pairs: [String] = []
-            pairs.reserveCapacity(entries.count)
-            for (key, value) in entries {
-                let encodedKey = percentEncode(key, allowReserved: op.allowReserved)
-                let encodedValue = percentEncode(value, allowReserved: op.allowReserved)
-                pairs.append("\(encodedKey)=\(encodedValue)")
-            }
-            return pairs.joined(separator: op.separator)
-        } else {
+        guard case .explode = varspec.modifier else {
 
             var parts: [String] = []
             parts.reserveCapacity(entries.count * 2)
@@ -221,12 +207,20 @@ extension RFC_6570.Template {
             }
             let joined = parts.joined(separator: ",")
 
-            if op.named {
-                return "\(varspec.name)=\(joined)"
-            } else {
+            guard op.named else {
                 return joined
             }
+            return "\(varspec.name)=\(joined)"
         }
+
+        var pairs: [String] = []
+        pairs.reserveCapacity(entries.count)
+        for (key, value) in entries {
+            let encodedKey = percentEncode(key, allowReserved: op.allowReserved)
+            let encodedValue = percentEncode(value, allowReserved: op.allowReserved)
+            pairs.append("\(encodedKey)=\(encodedValue)")
+        }
+        return pairs.joined(separator: op.separator)
     }
 
     private func percentEncode(_ string: String, allowReserved: Bool) -> String {
