@@ -2,14 +2,18 @@ import Testing
 
 @testable import RFC_6570
 
-@Suite
-struct `Additional RFC 6570 Compliance Tests` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+enum `AdditionalCompliance Tests` {}
+
+extension `AdditionalCompliance Tests` {
+    @Suite
+    struct `Additional RFC 6570 Compliance Tests` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `Additional RFC 6570 Compliance Tests`.Unit {
+extension `AdditionalCompliance Tests`.`Additional RFC 6570 Compliance Tests`.Unit {
 
     @Test
     func `Prefix modifier should not apply to lists`() throws {

@@ -2,14 +2,18 @@ import Testing
 
 @testable import RFC_6570
 
-@Suite
-struct `Final Edge Case Validation` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+enum `FinalValidation Tests` {}
+
+extension `FinalValidation Tests` {
+    @Suite
+    struct `Final Edge Case Validation` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `Final Edge Case Validation`.Unit {
+extension `FinalValidation Tests`.`Final Edge Case Validation`.Unit {
 
     @Test
     func `Prefix applied before encoding`() throws {

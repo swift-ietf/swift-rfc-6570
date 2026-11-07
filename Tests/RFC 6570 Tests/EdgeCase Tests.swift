@@ -2,14 +2,18 @@ import Testing
 
 @testable import RFC_6570
 
-@Suite
-struct `RFC 6570 Edge Cases and Compliance Tests` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+enum `EdgeCase Tests` {}
+
+extension `EdgeCase Tests` {
+    @Suite
+    struct `RFC 6570 Edge Cases and Compliance Tests` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `RFC 6570 Edge Cases and Compliance Tests`.Unit {
+extension `EdgeCase Tests`.`RFC 6570 Edge Cases and Compliance Tests`.Unit {
 
     @Test
     func `Percent character must be encoded as %25`() throws {

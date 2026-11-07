@@ -2,14 +2,18 @@ import Testing
 
 @testable import RFC_6570
 
-@Suite
-struct `Prefix Modifier Deep Dive` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+enum `Prefix Tests` {}
+
+extension `Prefix Tests` {
+    @Suite
+    struct `Prefix Modifier Deep Dive` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `Prefix Modifier Deep Dive`.Unit {
+extension `Prefix Tests`.`Prefix Modifier Deep Dive`.Unit {
 
     @Test
     func `Prefix counts characters correctly`() throws {

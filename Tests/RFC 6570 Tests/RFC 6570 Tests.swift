@@ -2,14 +2,18 @@ import Testing
 
 @testable import RFC_6570
 
-@Suite
-struct `RFC 6570 URI Template Tests` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+enum `RFC 6570 Tests` {}
+
+extension `RFC 6570 Tests` {
+    @Suite
+    struct `RFC 6570 URI Template Tests` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `RFC 6570 URI Template Tests`.Unit {
+extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `Parse simple template`() throws {
@@ -358,14 +362,16 @@ extension `RFC 6570 URI Template Tests`.Unit {
     }
 }
 
-@Suite
-struct `URI Template Operators` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+extension `RFC 6570 Tests` {
+    @Suite
+    struct `URI Template Operators` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `URI Template Operators`.Unit {
+extension `RFC 6570 Tests`.`URI Template Operators`.Unit {
     @Test
     func `All operators have correct prefixes`() {
         #expect(RFC_6570.Operator.simple.prefix.isEmpty)
@@ -391,14 +397,16 @@ extension `URI Template Operators`.Unit {
     }
 }
 
-@Suite
-struct `Variable Value Tests` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+extension `RFC 6570 Tests` {
+    @Suite
+    struct `Variable Value Tests` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `Variable Value Tests`.Unit {
+extension `RFC 6570 Tests`.`Variable Value Tests`.Unit {
     @Test
     func `String value is defined`() {
         let value: RFC_6570.Variable = "hello"
