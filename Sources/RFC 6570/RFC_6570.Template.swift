@@ -149,15 +149,15 @@ extension RFC_6570.Template {
             return encoded
         }
 
-        if value.isEmpty && op == .parameter {
+        return if value.isEmpty && op == .parameter {
 
-            return varspec.name
+            varspec.name
         } else if value.isEmpty {
 
-            return "\(varspec.name)="
+            "\(varspec.name)="
         } else {
 
-            return "\(varspec.name)=\(encoded)"
+            "\(varspec.name)=\(encoded)"
         }
     }
 
