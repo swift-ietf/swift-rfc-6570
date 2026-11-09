@@ -23,8 +23,7 @@ extension `Prefix Tests`.`Prefix Modifier Deep Dive`.Unit {
         #expect(result.value == "val")
 
         result = template.expand(variables: ["var": "👨‍👩‍👧‍👦ABC"])
-
-        print("Emoji test result: \(result)")
+        #expect(result.value == "%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9")
     }
 
     @Test

@@ -139,7 +139,7 @@ extension RFC_6570.Template {
         var value = string
 
         if case .prefix(let length) = varspec.modifier {
-            value = String(value.prefix(length))
+            value = String(String.UnicodeScalarView(value.unicodeScalars.prefix(length)))
         }
 
         let encoded = percentEncode(value, allowReserved: op.allowReserved)
