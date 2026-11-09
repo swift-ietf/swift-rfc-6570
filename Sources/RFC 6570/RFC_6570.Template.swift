@@ -224,14 +224,32 @@ extension RFC_6570.Template {
     }
 
     private func percentEncode(_ string: String, allowReserved: Bool) -> String {
-        let allowed: RFC_3986.ByteSet =
-            allowReserved
-            ? RFC_3986.ByteSet.unreserved.union(.reserved)
-            : .unreserved
-        return String(
-            decoding: RFC_3986.percentEncode(string.utf8, allowing: allowed),
-            as: UTF8.self
-        )
+        guard allowReserved else {
+            return String(
+                decoding: RFC_3986.percentEncode(string.utf8, allowing: .unreserved),
+                as: UTF8.self
+            )
+        }
+        let allowed = RFC_3986.ByteSet.unreserved.union(.reserved)
+        let bytes = Array(string.utf8)
+        var result: [UInt8] = []
+        result.reserveCapacity(bytes.count * 3)
+        var index = 0
+        while index < bytes.count {
+            let byte = bytes[index]
+            if byte == UInt8(ascii: "%"),
+                index + 2 < bytes.count,
+                RFC_3986.Grammar.isHexDigit(bytes[index + 1]),
+                RFC_3986.Grammar.isHexDigit(bytes[index + 2])
+            {
+                result.append(contentsOf: bytes[index...(index + 2)])
+                index += 3
+            } else {
+                RFC_3986.percentEncode(CollectionOfOne(byte), into: &result, allowing: allowed)
+                index += 1
+            }
+        }
+        return String(decoding: result, as: UTF8.self)
     }
 }
 

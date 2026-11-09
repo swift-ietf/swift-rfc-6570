@@ -16,6 +16,18 @@ extension `AdditionalCompliance Tests` {
 extension `AdditionalCompliance Tests`.`Additional RFC 6570 Compliance Tests`.Unit {
 
     @Test
+    func `Reserved expansion passes pct-encoded triplets through`() throws {
+        let reserved = try RFC_6570.Template("{+var}")
+        #expect(reserved.expand(variables: ["var": "a%41b%2"]).value == "a%41b%252")
+
+        let fragment = try RFC_6570.Template("{#var}")
+        #expect(fragment.expand(variables: ["var": "%e2%82%ac%zz"]).value == "#%e2%82%ac%25zz")
+
+        let simple = try RFC_6570.Template("{var}")
+        #expect(simple.expand(variables: ["var": "%41"]).value == "%2541")
+    }
+
+    @Test
     func `Prefix modifier should not apply to lists`() throws {
 
         let template = try RFC_6570.Template("{list:3}")
