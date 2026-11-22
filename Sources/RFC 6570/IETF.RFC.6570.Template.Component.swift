@@ -1,4 +1,4 @@
-extension RFC_6570.Template {
+extension IETF.RFC.`6570`.Template {
 
     internal enum Component: Hashable, Sendable {
         case literal(String)

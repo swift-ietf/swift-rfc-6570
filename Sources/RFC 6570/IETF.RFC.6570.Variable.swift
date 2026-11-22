@@ -2,7 +2,7 @@ public import Buffer_Linear_Primitive
 public import Hash_Indexed_Primitive
 import Ownership_Shared_Primitive
 
-extension RFC_6570 {
+extension IETF.RFC.`6570` {
 
     public enum Variable: Hashable, Sendable {
 
@@ -14,7 +14,7 @@ extension RFC_6570 {
     }
 }
 
-extension RFC_6570.Variable {
+extension IETF.RFC.`6570`.Variable {
 
     var isDefined: Bool {
         switch self {
@@ -33,24 +33,24 @@ extension RFC_6570.Variable {
         self = .dictionary(ordered)
     }
 
-    public static func dictionary(_ dict: [String: String]) -> RFC_6570.Variable {
-        RFC_6570.Variable(dictionary: dict)
+    public static func dictionary(_ dict: [String: String]) -> IETF.RFC.`6570`.Variable {
+        IETF.RFC.`6570`.Variable(dictionary: dict)
     }
 }
 
-extension RFC_6570.Variable: ExpressibleByStringLiteral {
+extension IETF.RFC.`6570`.Variable: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self = .string(value)
     }
 }
 
-extension RFC_6570.Variable: ExpressibleByArrayLiteral {
+extension IETF.RFC.`6570`.Variable: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: String...) {
         self = .list(elements)
     }
 }
 
-extension RFC_6570.Variable: ExpressibleByDictionaryLiteral {
+extension IETF.RFC.`6570`.Variable: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, String)...) {
 
         var ordered = Dictionary<String, String>.Ordered.Shared()
@@ -61,7 +61,7 @@ extension RFC_6570.Variable: ExpressibleByDictionaryLiteral {
     }
 }
 
-extension RFC_6570.Variable {
+extension IETF.RFC.`6570`.Variable {
 
     public var stringValue: String? {
         switch self {
@@ -89,8 +89,8 @@ extension RFC_6570.Variable {
     }
 }
 
-extension RFC_6570.Variable {
-    public static func == (lhs: RFC_6570.Variable, rhs: RFC_6570.Variable) -> Bool {
+extension IETF.RFC.`6570`.Variable {
+    public static func == (lhs: IETF.RFC.`6570`.Variable, rhs: IETF.RFC.`6570`.Variable) -> Bool {
         switch (lhs, rhs) {
         case (.string(let l), .string(let r)):
             return l == r

@@ -1,4 +1,4 @@
-extension RFC_6570 {
+extension IETF.RFC.`6570` {
 
     public enum Error: Swift::Error, Hashable, Sendable, CustomStringConvertible {
 
@@ -16,7 +16,7 @@ extension RFC_6570 {
     }
 }
 
-extension RFC_6570.Error {
+extension IETF.RFC.`6570`.Error {
     public var description: String {
         switch self {
         case .invalidTemplate(let msg):

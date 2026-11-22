@@ -1,1 +1,5 @@
-public enum RFC_6570 {}
+public import IETF_RFC
+
+extension IETF.RFC {
+    public enum `6570` {}
+}

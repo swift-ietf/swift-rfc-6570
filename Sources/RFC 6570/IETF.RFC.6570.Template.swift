@@ -3,7 +3,7 @@ import Hash_Indexed_Primitive
 import Ownership_Shared_Primitive
 public import RFC_3986
 
-extension RFC_6570 {
+extension IETF.RFC.`6570` {
 
     public struct Template: Hashable, Sendable {
 
@@ -11,7 +11,7 @@ extension RFC_6570 {
 
         internal let components: [Component]
 
-        public init(_ value: String) throws(RFC_6570.Error) {
+        public init(_ value: String) throws(IETF.RFC.`6570`.Error) {
             self.value = value
             self.components = try Self.parse(value)
         }
@@ -23,7 +23,7 @@ extension RFC_6570 {
     }
 }
 
-extension RFC_6570.Template: Codable {
+extension IETF.RFC.`6570`.Template: Codable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
@@ -36,21 +36,21 @@ extension RFC_6570.Template: Codable {
     }
 }
 
-extension RFC_6570.Template: CustomStringConvertible {
+extension IETF.RFC.`6570`.Template: CustomStringConvertible {
     public var description: String { value }
 }
 
-extension RFC_6570.Template: CustomDebugStringConvertible {
+extension IETF.RFC.`6570`.Template: CustomDebugStringConvertible {
     public var debugDescription: String {
         "RFC 6570.Template(\(value))"
     }
 }
 
-extension RFC_6570.Template: RawRepresentable {
+extension IETF.RFC.`6570`.Template: RawRepresentable {
     public var rawValue: String { value }
 
     public init?(rawValue: String) {
-        do throws(RFC_6570.Error) {
+        do throws(IETF.RFC.`6570`.Error) {
             try self.init(rawValue)
         } catch {
             return nil
@@ -58,15 +58,15 @@ extension RFC_6570.Template: RawRepresentable {
     }
 }
 
-extension RFC_6570.Template: Comparable {
+extension IETF.RFC.`6570`.Template: Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.value < rhs.value
     }
 }
 
-extension RFC_6570.Template {
+extension IETF.RFC.`6570`.Template {
 
-    public func expand(variables: [String: RFC_6570.Variable]) -> RFC_3986.URI {
+    public func expand(variables: [String: IETF.RFC.`6570`.Variable]) -> IETF.RFC.`3986`.URI {
         var result = ""
 
         for component in components {
@@ -80,12 +80,12 @@ extension RFC_6570.Template {
             }
         }
 
-        return RFC_3986.URI(unchecked: result)
+        return IETF.RFC.`3986`.URI(unchecked: result)
     }
 
     private func expandExpression(
         _ expression: Expression,
-        variables: [String: RFC_6570.Variable]
+        variables: [String: IETF.RFC.`6570`.Variable]
     ) -> String {
         let op = expression.op
         var results: [String] = []
@@ -112,8 +112,8 @@ extension RFC_6570.Template {
 
     private func expandVarSpec(
         _ varspec: VarSpec,
-        value: RFC_6570.Variable,
-        operator op: RFC_6570.Operator
+        value: IETF.RFC.`6570`.Variable,
+        operator op: IETF.RFC.`6570`.Operator
     ) -> String {
         switch value {
         case .string(let str):
@@ -134,7 +134,7 @@ extension RFC_6570.Template {
     private func expandString(
         _ string: String,
         varspec: VarSpec,
-        operator op: RFC_6570.Operator
+        operator op: IETF.RFC.`6570`.Operator
     ) -> String {
         var value = string
 
@@ -170,7 +170,7 @@ extension RFC_6570.Template {
     private func expandList(
         _ list: [String],
         varspec: VarSpec,
-        operator op: RFC_6570.Operator
+        operator op: IETF.RFC.`6570`.Operator
     ) -> String {
         guard !list.isEmpty else { return "" }
 
@@ -196,7 +196,7 @@ extension RFC_6570.Template {
     private func expandDictionary(
         _ dict: Dictionary<String, String>.Ordered.Shared,
         varspec: VarSpec,
-        operator op: RFC_6570.Operator
+        operator op: IETF.RFC.`6570`.Operator
     ) -> String {
         guard !dict.isEmpty else { return "" }
 
@@ -232,11 +232,11 @@ extension RFC_6570.Template {
     private func percentEncode(_ string: String, allowReserved: Bool) -> String {
         guard allowReserved else {
             return String(
-                decoding: RFC_3986.percentEncode(string.utf8, allowing: .unreserved),
+                decoding: IETF.RFC.`3986`.percentEncode(string.utf8, allowing: .unreserved),
                 as: UTF8.self
             )
         }
-        let allowed = RFC_3986.ByteSet.unreserved.union(.reserved)
+        let allowed = IETF.RFC.`3986`.ByteSet.unreserved.union(.reserved)
         let bytes = Array(string.utf8)
         var result: [UInt8] = []
         result.reserveCapacity(bytes.count * 3)
@@ -245,13 +245,13 @@ extension RFC_6570.Template {
             let byte = bytes[index]
             if byte == UInt8(ascii: "%"),
                 index + 2 < bytes.count,
-                RFC_3986.Grammar.isHexDigit(bytes[index + 1]),
-                RFC_3986.Grammar.isHexDigit(bytes[index + 2])
+                IETF.RFC.`3986`.Grammar.isHexDigit(bytes[index + 1]),
+                IETF.RFC.`3986`.Grammar.isHexDigit(bytes[index + 2])
             {
                 result.append(contentsOf: bytes[index...(index + 2)])
                 index += 3
             } else {
-                RFC_3986.percentEncode(CollectionOfOne(byte), into: &result, allowing: allowed)
+                IETF.RFC.`3986`.percentEncode(CollectionOfOne(byte), into: &result, allowing: allowed)
                 index += 1
             }
         }
@@ -259,10 +259,10 @@ extension RFC_6570.Template {
     }
 }
 
-extension RFC_6570.Template {
+extension IETF.RFC.`6570`.Template {
 
-    public func expand(_ variables: [String: String]) -> RFC_3986.URI {
-        let wrapped = variables.mapValues { RFC_6570.Variable.string($0) }
+    public func expand(_ variables: [String: String]) -> IETF.RFC.`3986`.URI {
+        let wrapped = variables.mapValues { IETF.RFC.`6570`.Variable.string($0) }
         return expand(variables: wrapped)
     }
 }

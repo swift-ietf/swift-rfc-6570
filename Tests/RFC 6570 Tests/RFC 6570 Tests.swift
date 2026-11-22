@@ -17,48 +17,48 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `Parse simple template`() throws {
-        let template = try RFC_6570.Template("/{var}")
+        let template = try IETF.RFC.`6570`.Template("/{var}")
         #expect(template.value == "/{var}")
         #expect(template.components.count == 2)
     }
 
     @Test
     func `Parse template with literals and expressions`() throws {
-        let template = try RFC_6570.Template("/users/{id}/posts")
+        let template = try IETF.RFC.`6570`.Template("/users/{id}/posts")
 
         #expect(template.components.count == 3)
     }
 
     @Test
     func `Parse template with query parameters`() throws {
-        let template = try RFC_6570.Template("/search{?q,page}")
+        let template = try IETF.RFC.`6570`.Template("/search{?q,page}")
         #expect(template.value == "/search{?q,page}")
     }
 
     @Test
     func `Invalid template throws error`() {
-        #expect(throws: RFC_6570.Error.self) {
-            try RFC_6570.Template("{invalid")
+        #expect(throws: IETF.RFC.`6570`.Error.self) {
+            try IETF.RFC.`6570`.Template("{invalid")
         }
     }
 
     @Test
     func `Empty expression throws error`() {
-        #expect(throws: RFC_6570.Error.self) {
-            try RFC_6570.Template("{}")
+        #expect(throws: IETF.RFC.`6570`.Error.self) {
+            try IETF.RFC.`6570`.Template("{}")
         }
     }
 
     @Test
     func `Expand simple variable`() throws {
-        let template = try RFC_6570.Template("/{var}")
+        let template = try IETF.RFC.`6570`.Template("/{var}")
         let uri = template.expand(variables: ["var": "value"])
         #expect(uri == "/value")
     }
 
     @Test
     func `Expand multiple variables`() throws {
-        let template = try RFC_6570.Template("/users/{id}/posts/{postId}")
+        let template = try IETF.RFC.`6570`.Template("/users/{id}/posts/{postId}")
         let uri = template.expand(variables: [
             "id": "123",
             "postId": "456",
@@ -68,7 +68,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `Expand with undefined variable`() throws {
-        let template = try RFC_6570.Template("/{var}/{other}")
+        let template = try IETF.RFC.`6570`.Template("/{var}/{other}")
         let uri = template.expand(variables: ["var": "value"])
 
         #expect(uri == "/value/")
@@ -76,14 +76,14 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `Simple expansion operator`() throws {
-        let template = try RFC_6570.Template("{var}")
+        let template = try IETF.RFC.`6570`.Template("{var}")
         let uri = template.expand(variables: ["var": "value"])
         #expect(uri == "value")
     }
 
     @Test
     func `Reserved expansion operator`() throws {
-        let template = try RFC_6570.Template("{+var}")
+        let template = try IETF.RFC.`6570`.Template("{+var}")
         let uri = template.expand(variables: ["var": "hello world"])
 
         #expect(uri == "hello%20world")
@@ -91,21 +91,21 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `Fragment expansion operator`() throws {
-        let template = try RFC_6570.Template("{#var}")
+        let template = try IETF.RFC.`6570`.Template("{#var}")
         let uri = template.expand(variables: ["var": "section"])
         #expect(uri == "#section")
     }
 
     @Test
     func `Query expansion operator`() throws {
-        let template = try RFC_6570.Template("{?var}")
+        let template = try IETF.RFC.`6570`.Template("{?var}")
         let uri = template.expand(variables: ["var": "value"])
         #expect(uri == "?var=value")
     }
 
     @Test
     func `Query with multiple variables`() throws {
-        let template = try RFC_6570.Template("{?x,y}")
+        let template = try IETF.RFC.`6570`.Template("{?x,y}")
         let uri = template.expand(variables: [
             "x": "1",
             "y": "2",
@@ -115,7 +115,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `List with simple expansion`() throws {
-        let template = try RFC_6570.Template("{list}")
+        let template = try IETF.RFC.`6570`.Template("{list}")
         let uri = template.expand(variables: [
             "list": .list(["red", "green", "blue"])
         ])
@@ -124,7 +124,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `List with explode modifier`() throws {
-        let template = try RFC_6570.Template("{list*}")
+        let template = try IETF.RFC.`6570`.Template("{list*}")
         let uri = template.expand(variables: [
             "list": .list(["red", "green", "blue"])
         ])
@@ -133,7 +133,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `List with query and explode`() throws {
-        let template = try RFC_6570.Template("{?list*}")
+        let template = try IETF.RFC.`6570`.Template("{?list*}")
         let uri = template.expand(variables: [
             "list": .list(["red", "green", "blue"])
         ])
@@ -142,7 +142,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `Dictionary with query and explode`() throws {
-        let template = try RFC_6570.Template("{?dict*}")
+        let template = try IETF.RFC.`6570`.Template("{?dict*}")
         let uri = template.expand(variables: [
             "dict": .dictionary(["lang": "en", "sort": "date"])
         ])
@@ -152,12 +152,12 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
 
     @Test
     func `Prefix modifier`() throws {
-        let template = try RFC_6570.Template("{var:3}")
+        let template = try IETF.RFC.`6570`.Template("{var:3}")
         let uri = template.expand(variables: ["var": "value"])
         #expect(uri == "val")
     }
 
-    private static let standardVars: [String: RFC_6570.Variable] = [
+    private static let standardVars: [String: IETF.RFC.`6570`.Variable] = [
         "var": "value",
         "hello": "Hello World!",
         "half": "50%",
@@ -198,7 +198,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
         template: String,
         expected: String
     ) throws {
-        let tpl = try RFC_6570.Template(template)
+        let tpl = try IETF.RFC.`6570`.Template(template)
         let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
@@ -223,7 +223,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
         ("{+keys*}", "semi=;,dot=.,comma=,"),
     ])
     func `RFC 6570 Section 3.2.3 - Reserved Expansion`(template: String, expected: String) throws {
-        let tpl = try RFC_6570.Template(template)
+        let tpl = try IETF.RFC.`6570`.Template(template)
         let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
@@ -243,7 +243,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
         ("{#keys*}", "#semi=;,dot=.,comma=,"),
     ])
     func `RFC 6570 Section 3.2.4 - Fragment Expansion`(template: String, expected: String) throws {
-        let tpl = try RFC_6570.Template(template)
+        let tpl = try IETF.RFC.`6570`.Template(template)
         let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
@@ -265,7 +265,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
         ("X{.empty_keys*}", "X"),
     ])
     func `RFC 6570 Section 3.2.5 - Label Expansion`(template: String, expected: String) throws {
-        let tpl = try RFC_6570.Template(template)
+        let tpl = try IETF.RFC.`6570`.Template(template)
         let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
@@ -290,7 +290,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
         template: String,
         expected: String
     ) throws {
-        let tpl = try RFC_6570.Template(template)
+        let tpl = try IETF.RFC.`6570`.Template(template)
         let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
@@ -314,7 +314,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
         template: String,
         expected: String
     ) throws {
-        let tpl = try RFC_6570.Template(template)
+        let tpl = try IETF.RFC.`6570`.Template(template)
         let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
@@ -335,7 +335,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
         template: String,
         expected: String
     ) throws {
-        let tpl = try RFC_6570.Template(template)
+        let tpl = try IETF.RFC.`6570`.Template(template)
         let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
@@ -356,7 +356,7 @@ extension `RFC 6570 Tests`.`RFC 6570 URI Template Tests`.Unit {
         template: String,
         expected: String
     ) throws {
-        let tpl = try RFC_6570.Template(template)
+        let tpl = try IETF.RFC.`6570`.Template(template)
         let result = tpl.expand(variables: Self.standardVars)
         #expect(result.value == expected)
     }
@@ -374,26 +374,26 @@ extension `RFC 6570 Tests` {
 extension `RFC 6570 Tests`.`URI Template Operators`.Unit {
     @Test
     func `All operators have correct prefixes`() {
-        #expect(RFC_6570.Operator.simple.prefix.isEmpty)
-        #expect(RFC_6570.Operator.reserved.prefix.isEmpty)
-        #expect(RFC_6570.Operator.fragment.prefix == "#")
-        #expect(RFC_6570.Operator.label.prefix == ".")
-        #expect(RFC_6570.Operator.path.prefix == "/")
-        #expect(RFC_6570.Operator.parameter.prefix == ";")
-        #expect(RFC_6570.Operator.query.prefix == "?")
-        #expect(RFC_6570.Operator.continuation.prefix == "&")
+        #expect(IETF.RFC.`6570`.Operator.simple.prefix.isEmpty)
+        #expect(IETF.RFC.`6570`.Operator.reserved.prefix.isEmpty)
+        #expect(IETF.RFC.`6570`.Operator.fragment.prefix == "#")
+        #expect(IETF.RFC.`6570`.Operator.label.prefix == ".")
+        #expect(IETF.RFC.`6570`.Operator.path.prefix == "/")
+        #expect(IETF.RFC.`6570`.Operator.parameter.prefix == ";")
+        #expect(IETF.RFC.`6570`.Operator.query.prefix == "?")
+        #expect(IETF.RFC.`6570`.Operator.continuation.prefix == "&")
     }
 
     @Test
     func `All operators have correct separators`() {
-        #expect(RFC_6570.Operator.simple.separator == ",")
-        #expect(RFC_6570.Operator.reserved.separator == ",")
-        #expect(RFC_6570.Operator.fragment.separator == ",")
-        #expect(RFC_6570.Operator.label.separator == ".")
-        #expect(RFC_6570.Operator.path.separator == "/")
-        #expect(RFC_6570.Operator.parameter.separator == ";")
-        #expect(RFC_6570.Operator.query.separator == "&")
-        #expect(RFC_6570.Operator.continuation.separator == "&")
+        #expect(IETF.RFC.`6570`.Operator.simple.separator == ",")
+        #expect(IETF.RFC.`6570`.Operator.reserved.separator == ",")
+        #expect(IETF.RFC.`6570`.Operator.fragment.separator == ",")
+        #expect(IETF.RFC.`6570`.Operator.label.separator == ".")
+        #expect(IETF.RFC.`6570`.Operator.path.separator == "/")
+        #expect(IETF.RFC.`6570`.Operator.parameter.separator == ";")
+        #expect(IETF.RFC.`6570`.Operator.query.separator == "&")
+        #expect(IETF.RFC.`6570`.Operator.continuation.separator == "&")
     }
 }
 
@@ -409,26 +409,26 @@ extension `RFC 6570 Tests` {
 extension `RFC 6570 Tests`.`Variable Value Tests`.Unit {
     @Test
     func `String value is defined`() {
-        let value: RFC_6570.Variable = "hello"
+        let value: IETF.RFC.`6570`.Variable = "hello"
         #expect(value.isDefined)
     }
 
     @Test
     func `Empty string is defined per RFC 6570`() {
 
-        let value: RFC_6570.Variable = ""
+        let value: IETF.RFC.`6570`.Variable = ""
         #expect(value.isDefined)
     }
 
     @Test
     func `List value is defined`() {
-        let value: RFC_6570.Variable = ["a", "b", "c"]
+        let value: IETF.RFC.`6570`.Variable = ["a", "b", "c"]
         #expect(value.isDefined)
     }
 
     @Test
     func `Dictionary value is defined`() {
-        let value: RFC_6570.Variable = ["key": "value"]
+        let value: IETF.RFC.`6570`.Variable = ["key": "value"]
         #expect(value.isDefined)
     }
 }

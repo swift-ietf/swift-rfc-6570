@@ -1,4 +1,4 @@
-extension RFC_6570 {
+extension IETF.RFC.`6570` {
 
     public enum Operator: String, Hashable, Sendable, CaseIterable {
 
@@ -20,7 +20,7 @@ extension RFC_6570 {
     }
 }
 
-extension RFC_6570.Operator {
+extension IETF.RFC.`6570`.Operator {
 
     var prefix: String {
         switch self {

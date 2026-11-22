@@ -17,7 +17,7 @@ extension `Prefix Tests`.`Prefix Modifier Deep Dive`.Unit {
 
     @Test
     func `Prefix counts characters correctly`() throws {
-        let template = try RFC_6570.Template("{var:3}")
+        let template = try IETF.RFC.`6570`.Template("{var:3}")
 
         var result = template.expand(variables: ["var": "value"])
         #expect(result.value == "val")
@@ -28,7 +28,7 @@ extension `Prefix Tests`.`Prefix Modifier Deep Dive`.Unit {
 
     @Test
     func `Prefix modifier supports up to 9999`() throws {
-        let template = try RFC_6570.Template("{var:9999}")
+        let template = try IETF.RFC.`6570`.Template("{var:9999}")
         let result = template.expand(variables: ["var": "test"])
         #expect(result.value == "test")
     }
@@ -36,8 +36,8 @@ extension `Prefix Tests`.`Prefix Modifier Deep Dive`.Unit {
     @Test
     func `Five-digit prefix should fail`() {
 
-        #expect(throws: RFC_6570.Error.self) {
-            try RFC_6570.Template("{var:10001}")
+        #expect(throws: IETF.RFC.`6570`.Error.self) {
+            try IETF.RFC.`6570`.Template("{var:10001}")
         }
     }
 }

@@ -1,10 +1,10 @@
-extension RFC_6570.Template {
+extension IETF.RFC.`6570`.Template {
 
     internal struct VarSpec: Hashable, Sendable {
         let name: String
-        let modifier: RFC_6570.Modifier?
+        let modifier: IETF.RFC.`6570`.Modifier?
 
-        init(name: String, modifier: RFC_6570.Modifier? = nil) {
+        init(name: String, modifier: IETF.RFC.`6570`.Modifier? = nil) {
             self.name = name
             self.modifier = modifier
         }

@@ -1,6 +1,6 @@
-extension RFC_6570.Template {
+extension IETF.RFC.`6570`.Template {
 
-    internal static func parse(_ template: String) throws(RFC_6570.Error) -> [Component] {
+    internal static func parse(_ template: String) throws(IETF.RFC.`6570`.Error) -> [Component] {
         var components: [Component] = []
         var currentLiteral = ""
         var index = template.startIndex
@@ -16,7 +16,7 @@ extension RFC_6570.Template {
                 }
 
                 guard let closingIndex = template[index...].firstIndex(of: "}") else {
-                    throw RFC_6570.Error.invalidTemplate(
+                    throw IETF.RFC.`6570`.Error.invalidTemplate(
                         "Unclosed expression starting at position \(template.distance(from: template.startIndex, to: index))"
                     )
                 }
@@ -28,7 +28,7 @@ extension RFC_6570.Template {
 
                 index = template.index(after: closingIndex)
             } else if char == "}" {
-                throw RFC_6570.Error.invalidTemplate(
+                throw IETF.RFC.`6570`.Error.invalidTemplate(
                     "Unexpected '}' at position \(template.distance(from: template.startIndex, to: index))"
                 )
             } else {
@@ -44,16 +44,16 @@ extension RFC_6570.Template {
         return components
     }
 
-    private static func parseExpression(_ expression: String) throws(RFC_6570.Error) -> Expression {
+    private static func parseExpression(_ expression: String) throws(IETF.RFC.`6570`.Error) -> Expression {
         guard !expression.isEmpty else {
-            throw RFC_6570.Error.invalidExpression("Empty expression")
+            throw IETF.RFC.`6570`.Error.invalidExpression("Empty expression")
         }
 
         var remaining = expression
 
-        let op: RFC_6570.Operator
+        let op: IETF.RFC.`6570`.Operator
         if let first = remaining.first,
-            let foundOperator = RFC_6570.Operator(rawValue: String(first))
+            let foundOperator = IETF.RFC.`6570`.Operator(rawValue: String(first))
         {
             op = foundOperator
             remaining.removeFirst()
@@ -73,23 +73,23 @@ extension RFC_6570.Template {
         varspecStrings.append(String(decoding: remBytes[vsStart..<remBytes.count], as: UTF8.self))
 
         guard !varspecStrings.isEmpty else {
-            throw RFC_6570.Error.invalidExpression("No variables in expression")
+            throw IETF.RFC.`6570`.Error.invalidExpression("No variables in expression")
         }
 
-        let varspecs = try varspecStrings.map { (s: String) throws(RFC_6570.Error) in
+        let varspecs = try varspecStrings.map { (s: String) throws(IETF.RFC.`6570`.Error) in
             try parseVarSpec(s)
         }
 
         return Expression(op: op, varspecs: varspecs)
     }
 
-    private static func parseVarSpec(_ varspec: String) throws(RFC_6570.Error) -> VarSpec {
+    private static func parseVarSpec(_ varspec: String) throws(IETF.RFC.`6570`.Error) -> VarSpec {
         guard !varspec.isEmpty else {
-            throw RFC_6570.Error.invalidVariableName("Empty variable name")
+            throw IETF.RFC.`6570`.Error.invalidVariableName("Empty variable name")
         }
 
         var name = varspec
-        var modifier: RFC_6570.Modifier? = nil
+        var modifier: IETF.RFC.`6570`.Modifier? = nil
 
         if name.hasSuffix("*") {
             modifier = .explode
@@ -103,14 +103,14 @@ extension RFC_6570.Template {
                 let prefixLength = Int(prefixString),
                 prefixLength > 0
             else {
-                throw RFC_6570.Error.invalidModifier("Invalid prefix length: \(prefixString)")
+                throw IETF.RFC.`6570`.Error.invalidModifier("Invalid prefix length: \(prefixString)")
             }
             modifier = .prefix(prefixLength)
             name = String(name[..<colonIndex])
         }
 
         guard isValidVariableName(name) else {
-            throw RFC_6570.Error.invalidVariableName("Invalid variable name: \(name)")
+            throw IETF.RFC.`6570`.Error.invalidVariableName("Invalid variable name: \(name)")
         }
 
         return VarSpec(name: name, modifier: modifier)
